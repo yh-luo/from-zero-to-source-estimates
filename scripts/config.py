@@ -28,10 +28,15 @@ n_jobs = 2
 n_max_ecg = 3
 n_max_eog = 2
 
-tmin = -1
-tmax = 0.8
-baseline = (-1, -0.8)
-reject_tmax = 0.6
+# epochs
+# We'll create some dummy names for each event type
+event_id = {'Auditory/Left': 1, 'Auditory/Right': 2,
+            'Visual/Left': 3, 'Visual/Right': 4,
+            'smiley': 5, 'button': 32}
+tmin = -0.2
+tmax = 0.5
+baseline = (None, 0)
+reject_tmax = 0.5
 smooth = 10
 
 ctc = op.join(study_dir, 'ct_sparse_mgh.fif')
