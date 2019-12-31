@@ -36,7 +36,7 @@ event_id = {'Auditory/Left': 1, 'Auditory/Right': 2,
 tmin = -0.2
 tmax = 0.5
 baseline = (None, 0)
-reject_tmax = 0.5
+reject_tmax = None
 smooth = 10
 
 ctc = op.join(study_dir, 'ct_sparse_mgh.fif')
