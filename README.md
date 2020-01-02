@@ -122,8 +122,8 @@ ECG and EOG events are also detected in this stage and excluded from the ICA to 
 
 #### Demo
 
-`8_inspect_frequency.py`
-`9_time_frequency.py`
++ `8_inspect_frequency.py`
++ `9_time_frequency.py`
 
 ### Group averages on sensor level
 
@@ -146,7 +146,6 @@ or use `mne.gui.coregistration` to initiate the GUI.
 
 #### Notes
 
-+ use `sample_audvis_raw-trans.fif` from the sample dataset for practice.
 + Instructions can be found in [MNE documentation](https://mne.tools/stable/generated/mne.gui.coregistration.html?highlight=coreg#mne.gui.coregistration).
 + It is not neccessary, but may be helpful to use the high-resolution head surfaces to help coregistration.
 To do this, refer to `11_setup_head_for_coreg.py`.
@@ -156,8 +155,7 @@ To do this, refer to `11_setup_head_for_coreg.py`.
 #### Demo
 
 + Data
-  + Trans file was `sample_audvis_raw-trans.fif` from the sample dataset.
-
+  + Use `sample_audvis_raw-trans.fif` from the sample dataset for practice, or create it manually.
 + `12_forward_solution.py`
 
 ### Inverse soltuion
@@ -176,7 +174,7 @@ To do this, refer to `11_setup_head_for_coreg.py`.
 
 #### Scripts
 
-`15_group_average_source.py`
-`15-2_viz_group_average.py`
++ `15_group_average_source.py`
++ `15-2_viz_group_average.py`
 
 ### Compute statistics
