@@ -5,6 +5,7 @@ import os.path as op
 from scripts.config import meg_dir, subjects_dir, baseline
 from mayavi import mlab
 
+# jupyter notebook setup
 get_ipython().run_line_magic('matplotlib', 'qt')
 get_ipython().run_line_magic('gui', 'qt')
 
@@ -25,8 +26,6 @@ mne.viz.plot_compare_evokeds(mapping)
 # Source space contrast
 stc_aud = mne.read_source_estimate(op.join(meg_dir, 'aud_left_minus_right-grand_average-ave-stc'))
 stc_aud.plot(hemi='both', initial_time=0.1)
-stc_aud.plot(hemi='both', initial_time=0.2)
 
 stc_vis = mne.read_source_estimate(op.join(meg_dir, 'vis_left_minus_right-grand_average-ave-stc'))
 stc_vis.plot(hemi='both', initial_time=0.1)
-stc_vis.plot(hemi='both', initial_time=0.2)

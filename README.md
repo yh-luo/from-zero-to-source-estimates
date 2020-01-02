@@ -108,11 +108,17 @@ ECG and EOG events are also detected in this stage and excluded from the ICA to 
 
 ### Create evoked responses
 
+The epochs are averaged across conditions to create evoked responses for each subject.
+
 #### Demo
 
 `6_evoked.py`
 
 ### Compute baseline covariance
+
+Becauase inverse solvers usually assume Gaussian noise distribution, M/EEG signals require a whitening step due to the  nature of being highly spatially correlated.
+To denoise the data, one must provide an estimate of the spatial noise covariance matrix. Empty-room recordings for MEG or pre-stimulus period can be used to compute such information.
+Here, the pre-stimulus period (baseline) was used.
 
 #### Demo
 
@@ -126,6 +132,8 @@ ECG and EOG events are also detected in this stage and excluded from the ICA to 
 + `9_time_frequency.py`
 
 ### Group averages on sensor level
+
+The evoked responses are averaged for group averages.
 
 #### Demo
 
@@ -143,7 +151,6 @@ mne coreg
 
 or use `mne.gui.coregistration` to initiate the GUI.
 
-
 #### Notes
 
 + Instructions can be found in [MNE documentation](https://mne.tools/stable/generated/mne.gui.coregistration.html?highlight=coreg#mne.gui.coregistration).
@@ -151,6 +158,8 @@ or use `mne.gui.coregistration` to initiate the GUI.
 To do this, refer to `11_setup_head_for_coreg.py`.
 
 ### Forward solution
+
+Compute forward solution for the MEG data.
 
 #### Demo
 
@@ -160,11 +169,16 @@ To do this, refer to `11_setup_head_for_coreg.py`.
 
 ### Inverse soltuion
 
+Compute and apply a dSPM inverse solution for each evoked data set.
+
 #### Demo
 
 `13_inverse_solution.py`
 
 ### Morph data for group averages
+
+To analyze data at the group level, data from all subjects need to be transformed to a common source space. This procedure is called **morphing** by MNE.
+Here, the data are morphed to the standard FreeSurfer average subject `fsaverage`.
 
 #### Demo
 
@@ -172,9 +186,13 @@ To do this, refer to `11_setup_head_for_coreg.py`.
 
 ### Group averages on source level
 
+After morphing, the source estimates are averaged for group responses on source level.
+
 #### Scripts
 
 + `15_group_average_source.py`
 + `15-2_viz_group_average.py`
 
 ### Compute statistics
+
+To test if the evoked reponses are significantly different between conditions across subjects.
