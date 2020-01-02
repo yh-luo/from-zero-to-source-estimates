@@ -6,7 +6,7 @@
 
 ### DICOMs to NifTi
 
-You can use any softwares you like. I used [dcm2nii](https://people.cas.sc.edu/rorden/mricron/dcm2nii.html) in [MRICron 2MAY2016](https://www.nitrc.org/projects/mricron).
+Use any software you like. I used [dcm2nii](https://people.cas.sc.edu/rorden/mricron/dcm2nii.html) in [MRICron 2MAY2016](https://www.nitrc.org/projects/mricron).
 dcm2nii works fine for me while dcm2niix adds additional bytes in the NifTi files and FreeSurfer is unable to process it sometimes.
 
 #### Notes
@@ -15,12 +15,13 @@ Though `mri_convert` in FreeSurfer can convert DICOMs to NifTi, the output are s
 
 ### recon-all
 
-You can use command line:
+Use command line:
+
 ```bash
 recon-all -all -s sample -i sample.nii.gz
 ```
 
-Or use Python to call FreeSurfer (unofficially recommended by me).
+Or use Python scripts to call FreeSurfer (unofficially recommended by me).
 
 #### Demo
 
@@ -34,13 +35,14 @@ Or use Python to call FreeSurfer (unofficially recommended by me).
 #### Notes
 
 + `recon-all` takes hours (~7 hours on AMD Ryzen 5 3600) to complete!
-+ FreeSurfer uses single thread. To save time, if the cpu has multiple cores, open several terminals to process several subjects or use `mne.parallel.parallel_func` to loop through all the subjects.
++ FreeSurfer uses single thread. If the cpu has multiple cores, open several terminals to process more than one subjects or use `mne.parallel.parallel_func` to loop through all the subjects.
    + Using many terminals at once works great for me.
-+ Remember to [setup tcsh](https://surfer.nmr.mgh.harvard.edu/fswiki/SetupConfiguration_Linux) for FreeSurfer reconstructions.
++ Remember to [install and setup tcsh](https://surfer.nmr.mgh.harvard.edu/fswiki/SetupConfiguration_Linux) for FreeSurfer reconstructions.
 
 ### Make BEMs and set up the source space
 
 There are two ways to create BEM surfaces:
+
 1. `mne.bem.make_flash_bem` requires additional processes to prepare fast low-angle shot (FLASH) images.
     + Notes: Read the documentation in [`mne.bem.convert_flash_mris`](https://mne.tools/stable/generated/mne.bem.convert_flash_mris.html#mne.bem.convert_flash_mris) and [`mne.bem.make_flash_bem`](https://mne.tools/stable/generated/mne.bem.make_flash_bem.html?highlight=make_flash_bem#mne-bem-make-flash-bem)
 2. `mne.bem.make_watershed_bem` create BEM surfaces using the FreeSurfer watershed algorithm (could be less accurate).
@@ -50,12 +52,12 @@ There are two ways to create BEM surfaces:
 + MNE version < 20 has a bug that makes it impossible to create watershed BEMs when `overwrite=False`.
 + I couldn't figure out how to acquire FLASH images at the moment, so I used watershed BEMs.
 
-After making BEM surfaces, use them to create BEM mmodels, BEM solutions and the source space.
+After making BEM surfaces, use them to create BEM models, BEM solutions and setup the source space.
 
 #### Demo
 
 + Data
-  + FreeSurferreconstruction of subject_a or subject_b
+  + FreeSurfer reconstruction of subject_a or subject_b
 
 + `2_setup_source_space.py`
 
@@ -69,11 +71,11 @@ If you are from NTU like me, the data are assumed **Maxwell filtered** using SSS
 
 #### Practice
 
-Raw data from [sample dataset](https://mne.tools/stable/overview/datasets_index.html#sample) was used in this tutorial. Maxwell filtering would be performed on it.
+This tutorial use the [sample dataset](https://mne.tools/stable/overview/datasets_index.html#sample) and use MNE to Maxwell-filter the raw data.
 
 ##### Note
 
-+ Use `0_fetch_dataset.py` to get dataset if not already.
++ Use `0_fetch_dataset.py` to get the sample dataset if not already.
 
 ### Filter
 
@@ -99,8 +101,8 @@ Because of its peaky distributions, eye blinks and heartbeats can be easily remo
 
 ### Epoching and baseline correction
 
-We first extract events using `mne.find_events` and create epochs based on the events.
-ECG and EOG events are also detected in this stage and excluded from the ICA to prevent the noise spreading to the all signals. It is common practice to use baseline correction so that any constant offsets in the baseline are removed.
+Extract events using `mne.find_events` and create epochs based on the events.
+ECG and EOG events are also detected in this stage and excluded from the ICA to prevent the noise from spreading to all signals. It is common practice to use baseline correction so that any constant offsets in the baseline are removed.
 
 #### Demo
 
@@ -116,8 +118,7 @@ The epochs are averaged across conditions to create evoked responses for each su
 
 ### Compute baseline covariance
 
-Becauase inverse solvers usually assume Gaussian noise distribution, M/EEG signals require a whitening step due to the  nature of being highly spatially correlated.
-To denoise the data, one must provide an estimate of the spatial noise covariance matrix. Empty-room recordings for MEG or pre-stimulus period can be used to compute such information.
+Becauase inverse solvers usually assume Gaussian noise distribution, M/EEG signals require a whitening step due to the  nature of being highly spatially correlated. To denoise the data, one must provide an estimate of the spatial noise covariance matrix. Empty-room recordings for MEG or pre-stimulus period can be used to compute such information.
 Here, the pre-stimulus period (baseline) was used.
 
 #### Demo
@@ -195,4 +196,4 @@ After morphing, the source estimates are averaged for group responses on source 
 
 ### Compute statistics
 
-To test if the evoked reponses are significantly different between conditions across subjects.
+Test if the evoked reponses are significantly different between conditions across subjects. The multiple comparisons problem is addressed with a cluster-level permutation test across space and time.
