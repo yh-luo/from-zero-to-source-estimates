@@ -24,4 +24,4 @@ def process_subject_head(subject_id):
     ], op.join(subject_mri_dir, f"{subject_id}_make_scalp_surfaces.txt"))
     print(f"Created high-resolution head surfaces for {subject}")
 
-process_subject_head('subject_a')
+process_subject_head('sample')

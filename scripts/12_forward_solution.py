@@ -8,7 +8,8 @@ from config import meg_dir, subjects_dir, map_subjects, spacing, mindist, n_jobs
 def run_forward(subject):
     evoked_fname = op.join(meg_dir, f'{subject}_audvis-filt-sss-ave.fif')
     fwd_fname = op.join(meg_dir, f'{subject}_audvis-{spacing}-fwd.fif')
-    # Remember to put the trans file in MEG/
+    # If coregistration was done manually, change it to the file name
+    # If use the provided trans file from sample dataset, remember to put the trans file in MEG/
     trans_fname = op.join(meg_dir, f'{subject}_audvis_raw-trans.fif')
 
     # If you follow the step in 2_setup_source_space.py

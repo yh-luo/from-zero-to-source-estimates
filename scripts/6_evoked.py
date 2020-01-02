@@ -30,16 +30,16 @@ def run_evoked(subject):
     assert evoked_al_eq.nave == evoked_ar_eq.nave == evoked_vl_eq.nave == evoked_vr_eq.nave
 
     # simplify comment
-    evoked_al.comment = 'Auditory/Left'
-    evoked_ar.comment = 'Auditory/Right'
-    evoked_vl.comment = 'Visual/Left'
-    evoked_vr.comment = 'Visual/Right'
-    contrast_aud.comment = 'Auditory Left - Right'
-    contrast_vis.comment = 'Visual Left - Right'
-    evoked_al_eq.comment = 'Auditory/Left Equal'
-    evoked_ar_eq.comment = 'Auditory/Right Equal'
-    evoked_vl_eq.comment = 'Visual/Left Equal'
-    evoked_vr_eq.comment = 'Visual/Right Equal'
+    evoked_al.comment = 'aud_left'
+    evoked_ar.comment = 'aud_right'
+    evoked_vl.comment = 'vis_left'
+    evoked_vr.comment = 'vis_right'
+    contrast_aud.comment = 'aud_left_minus_right'
+    contrast_vis.comment = 'vis_left_minus_right'
+    evoked_al_eq.comment = 'aud_left_eq'
+    evoked_ar_eq.comment = 'aud_right_eq'
+    evoked_vl_eq.comment = 'vis_left_eq'
+    evoked_vr_eq.comment = 'vis_right_eq'
 
     mne.write_evokeds(evoked_fname, [
         evoked_al, evoked_ar, evoked_vl, evoked_vr, contrast_aud, contrast_vis,

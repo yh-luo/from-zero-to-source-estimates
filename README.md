@@ -149,25 +149,26 @@ or use `mne.gui.coregistration` to initiate the GUI.
 + use `sample_audvis_raw-trans.fif` from the sample dataset for practice.
 + Instructions can be found in [MNE documentation](https://mne.tools/stable/generated/mne.gui.coregistration.html?highlight=coreg#mne.gui.coregistration).
 + It is not neccessary, but may be helpful to use the high-resolution head surfaces to help coregistration.
-To do this, play with subject_a and refer to `11_setup_head_for_coreg.py`.
+To do this, refer to `11_setup_head_for_coreg.py`.
 
 ### Forward solution
 
 #### Demo
 
-+ Data: `sample_audvis_raw-trans.fif`
++ Data
+  + Trans file was `sample_audvis_raw-trans.fif` from the sample dataset.
 
 + `12_forward_solution.py`
 
 ### Inverse soltuion
 
-#### Scripts
+#### Demo
 
 `13_inverse_solution.py`
 
 ### Morph data for group averages
 
-#### Sripts
+#### Demo
 
 `14_morph_source.py`
 

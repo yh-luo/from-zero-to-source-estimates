@@ -5,16 +5,16 @@ from config import meg_dir, map_subjects, excludes
 
 # container for all the evokeds
 all_evokeds = {
-    'Auditory/Left': [],
-    'Auditory/Right': [],
-    'Visual/Left': [],
-    'Visual/Right': [],
-    'Auditory Left - Right': [],
-    'Visual Left - Right': [],
-    'Auditory/Left Equal': [],
-    'Auditory/Right Equal': [],
-    'Visual/Left Equal': [],
-    'Visual/Right Equal': []
+    'aud_left': [],
+    'aud_right': [],
+    'vis_left': [],
+    'vis_right': [],
+    'aud_left_minus_right': [],
+    'vis_left_minus_right': [],
+    'aud_left_eq': [],
+    'aud_right_eq': [],
+    'vis_left_eq': [],
+    'vis_right_eq': []
 }
 all_grands = list()
 subjects = [s for s in map_subjects.values() if s not in excludes]
