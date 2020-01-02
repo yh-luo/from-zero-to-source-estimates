@@ -2,6 +2,12 @@
 
 [Overview](https://mne.tools/stable/overview/cookbook.html)
 
+## Readings
+
++ [MNE Biomag Demo](http://mne.tools/mne-biomag-group-demo/index.html)
++ MNE [tutorials](https://mne.tools/stable/auto_tutorials/index.html) and documentation
++ Jas, M., Larson, E., Engemann, D. A., Leppäkangas, J., Taulu, S., Hämäläinen, M., & Gramfort, A. (2018). A Reproducible MEG/EEG Group Study With the MNE Software: Recommendations, Quality Assessments, and Good Practices. Frontiers in Neuroscience, 12, 530. https://doi.org/10.3389/fnins.2018.00530
+
 ## FreeSurfer anatomical pipeline
 
 ### DICOMs to NifTi
@@ -77,6 +83,19 @@ This tutorial use the [sample dataset](https://mne.tools/stable/overview/dataset
 
 + Use `0_fetch_dataset.py` to get the sample dataset if not already.
 
+#### Directory structure
+
+Besides, the structure of your study directory should look like:
+
+```
+.
+├── MEG
+├── MRI
+├── results
+├── scripts
+└── subjects
+```
+
 ### Filter
 
 Most event-related brain signals are below 40 Hz. Low-pass filter with 40Hz does not affect most ERP signals of interest and attenuates the powerline frequency (60Hz in Taiwan) and all HPI coil frequencies (above 200Hz).
@@ -119,7 +138,7 @@ The epochs are averaged across conditions to create evoked responses for each su
 ### Compute baseline covariance
 
 Becauase inverse solvers usually assume Gaussian noise distribution, M/EEG signals require a whitening step due to the  nature of being highly spatially correlated. To denoise the data, one must provide an estimate of the spatial noise covariance matrix. Empty-room recordings for MEG or pre-stimulus period can be used to compute such information.
-Here, the pre-stimulus period (baseline) was used.
+Here, the pre-stimulus period (baseline) is used.
 
 #### Demo
 
@@ -196,4 +215,13 @@ After morphing, the source estimates are averaged for group responses on source 
 
 ### Compute statistics
 
-Test if the evoked reponses are significantly different between conditions across subjects. The multiple comparisons problem is addressed with a cluster-level permutation test across space and time.
+Test if the evoked reponses are significantly different between conditions across subjects. The multiple comparisons problem is addressed with a cluster-level permutation test across space and time. To demonstrate, the evoked responses elicited by left auditory stimuli and by left visual stimuli are compared. The cluster results are further visualized.
+
+#### Demo
+
++ `16_statistics.py`
++ `16-2_viz_statistics.py`
+
+## Write reports
+
+Congratulations and goodbye! You are on your own now :)
