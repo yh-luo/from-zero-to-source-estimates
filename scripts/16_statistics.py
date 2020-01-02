@@ -11,22 +11,22 @@ aud_l = list()
 vis_l = list()
 
 subjects = [s for s in map_subjects.values() if s not in excludes]
-# For demonstration purpose, the data are simultated to create 5 subjects
-subjects = subjects * 5
+# For demonstration purpose, the data are simultated to create 10 subjects
+subjects = subjects * 10
 for subject in subjects:
     print(f'processing {subject}')
     # auditory
     stc = mne.read_source_estimate(
         op.join(meg_dir,
                 f'{subject}_audvis-dSPM_inverse_morph-filt-sss-aud_left_eq-stc'))
-    # why `crop`: only deal with 0 < t < 0.2 to reduce multiple comparisons
+    # why `crop`: only deal with t > 0 to reduce multiple comparisons
     # why `T`: transpose to the correct shape
-    aud_l.append(stc.magnitude().crop(0, 0.2).data.T)
+    aud_l.append(stc.magnitude().crop(0, None).data.T)
     # visual
     stc = mne.read_source_estimate(
         op.join(meg_dir,
                 f'{subject}_audvis-dSPM_inverse_morph-filt-sss-vis_left_eq-stc'))
-    vis_l.append(stc.magnitude().crop(0, 0.2).data.T)
+    vis_l.append(stc.magnitude().crop(0, None).data.T)
 
 # Create contrast
 contrast_X = np.array(aud_l, float) - np.array(vis_l, float)
@@ -36,28 +36,27 @@ fsaverage_src = mne.read_source_spaces(
     op.join(subjects_dir, 'fsaverage', 'bem', 'fsaverage-5-src.fif'))
 connectivity = mne.spatial_src_connectivity(fsaverage_src)
 
-# use TFCE
 n_subjects = len(contrast_X)
-p_threshold = 0.05
+# set the threshold quite high to reduce computation
+# 0.05 is more practical
+p_threshold = 0.001
 t_threshold = -stats.distributions.t.ppf(p_threshold / 2., n_subjects - 1)
+# To use TFCE, set threshold=threshold_tfce
+# threshold_tfce = dict(start=0, step=0.2)
 
 # To use the “hat” adjustment method, a value of sigma=1e-3 may be a reasonable choice.
 stat_fun = partial(mne.stats.ttest_1samp_no_p, sigma=1e-3)
-# set the threshold quite high to reduce computation
-p_threshold = 0.001
-# To use TFCE, set threshold=threshold_tfce
-# threshold_tfce = dict(start=0, step=0.2)
 
 # Permutation test takes a long time to finish!
 T_obs, clusters, cluster_p_values, H0 = clu = \
     mne.stats.spatio_temporal_cluster_1samp_test(contrast_X, connectivity=connectivity,
-        n_jobs=n_jobs, threshold=p_threshold, stat_fun=stat_fun, buffer_size=None, step_down_p=0.05,
+        n_jobs=n_jobs, threshold=t_threshold, stat_fun=stat_fun, buffer_size=None, step_down_p=0.05,
         verbose=True)
 
 # save the result
-window = '0_to_200'
+window = '0_to_None'
 contrast_name = 'left_auditory_vs_visual'
-cluster_name = op.join(rst_dir, f'spatio_temporal_cluster_{contrast_name}_{window}.cluster')
+cluster_name = op.join(rst_dir, f'{contrast_name}_{window}.cluster')
 cluster_result = dict(T_obs=T_obs,
                       clusters=clusters,
                       cluster_p_values=cluster_p_values,

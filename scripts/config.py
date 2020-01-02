@@ -22,7 +22,7 @@ map_subjects = {
 
 excludes = ["subject_a"]
 
-n_jobs = 2
+n_jobs = 4
 
 # artifacts
 n_max_ecg = 3
