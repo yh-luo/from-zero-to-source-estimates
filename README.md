@@ -2,6 +2,29 @@
 
 [Overview](https://mne.tools/stable/overview/cookbook.html)
 
+  - [Readings](#readings)
+  - [FreeSurfer anatomical pipeline](#freesurfer-anatomical-pipeline)
+    - [DICOMs to NifTi](#dicoms-to-nifti)
+    - [FreeSurfer Anatomical reconstructions](#freesurfer-anatomical-reconstructions)
+    - [Make BEMs and set up the source space](#make-bems-and-set-up-the-source-space)
+  - [Preprocessing MEG data](#preprocessing-meg-data)
+    - [Prerequisite](#prerequisite)
+    - [Filter](#filter)
+    - [Repairing artifacts with ICA](#repairing-artifacts-with-ica)
+    - [Epoching and baseline correction](#epoching-and-baseline-correction)
+    - [Create evoked responses](#create-evoked-responses)
+    - [Compute baseline covariance](#compute-baseline-covariance)
+    - [FIXME: Time-frequency decomposition](#fixme-time-frequency-decomposition)
+    - [Group averages on sensor level](#group-averages-on-sensor-level)
+  - [Source level](#source-level)
+    - [Coregistration](#coregistration)
+    - [Forward solution](#forward-solution)
+    - [Inverse soltuion](#inverse-soltuion)
+    - [Morph data for group averages](#morph-data-for-group-averages)
+    - [Group averages on source level](#group-averages-on-source-level)
+    - [Compute statistics](#compute-statistics)
+  - [Write reports](#write-reports)
+
 ## Readings
 
 + [MNE Biomag Demo](http://mne.tools/mne-biomag-group-demo/index.html)
@@ -19,7 +42,7 @@ dcm2nii works fine for me while dcm2niix adds additional bytes in the NifTi file
 
 Though `mri_convert` in FreeSurfer can convert DICOMs to NifTi, the output are sometimes problematic and FreeSurfer is unable to reconstruct the surfaces using it.
 
-### recon-all
+### FreeSurfer Anatomical reconstructions
 
 Use command line:
 
