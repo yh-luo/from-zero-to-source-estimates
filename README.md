@@ -1,5 +1,7 @@
 # From Zero to Source Estimates
 
+If you have questions or want to start a discussion, please use the DISQUS comment system below [the post](https://yuhan.netlify.com/posts/from-zero-to-source-estimates/). If you want to contribute or update the contents (more than welcome!), please open a issue or even create a pull request.
+
 [Overview](https://mne.tools/stable/overview/cookbook.html)
 
   - [Readings](#readings)
@@ -24,6 +26,12 @@
     - [Group averages on source level](#group-averages-on-source-level)
     - [Compute statistics](#compute-statistics)
   - [Write reports](#write-reports)
+
+## To-Do
+
+- :black_square_button: Time-frequency decomposition
+- :black_square_button: Chinese translation
+- :black_square_button: More visualization
 
 ## Readings
 
