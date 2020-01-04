@@ -29,9 +29,9 @@ If you have questions or want to start a discussion, please use the DISQUS comme
 
 ## To-Do
 
-- :black_square_button: Time-frequency decomposition
-- :black_square_button: Chinese translation
-- :black_square_button: More visualization
+- :white_large_square: Time-frequency decomposition
+- :white_large_square: Chinese translation
+- :white_large_square: More visualization
 
 ## Readings
 
