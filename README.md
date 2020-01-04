@@ -100,7 +100,7 @@ If you are from NTU like me, the data are assumed **Maxwell filtered** using SSS
 
 #### Practice
 
-This tutorial use the [sample dataset](https://mne.tools/stable/overview/datasets_index.html#sample) and use MNE to Maxwell-filter the raw data.
+This tutorial utilizes the [sample dataset](https://mne.tools/stable/overview/datasets_index.html#sample) and uses MNE to Maxwell-filter the raw data.
 
 ##### Note
 
@@ -108,7 +108,7 @@ This tutorial use the [sample dataset](https://mne.tools/stable/overview/dataset
 
 #### Directory structure
 
-Besides, the structure of your study directory should look like:
+The structure of your study directory should look like:
 
 ```
 .
