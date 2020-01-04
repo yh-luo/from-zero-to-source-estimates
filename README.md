@@ -126,7 +126,7 @@ Data of EOG channels would be further high-pass filtered on 1Hz to use ICA.
 
 #### Demo
 
-+ `3_filter.py`
+`3_filter.py`
 
 ### Repairing artifacts with ICA
 
@@ -231,7 +231,7 @@ Here, the data are morphed to the standard FreeSurfer average subject `fsaverage
 
 After morphing, the source estimates are averaged for group responses on source level.
 
-#### Scripts
+#### Demo
 
 + `15_group_average_source.py`
 + `15-2_viz_group_average.py`
