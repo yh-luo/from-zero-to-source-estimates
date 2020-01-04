@@ -4,6 +4,7 @@ If you have questions or want to start a discussion, please use the DISQUS comme
 
 [Overview](https://mne.tools/stable/overview/cookbook.html)
 
+  - [To-Do](#to-do)
   - [Readings](#readings)
   - [FreeSurfer anatomical pipeline](#freesurfer-anatomical-pipeline)
     - [DICOMs to NifTi](#dicoms-to-nifti)
