@@ -1,8 +1,9 @@
-import mne
 import os.path as op
+
+import mne
 from mne.parallel import parallel_func
 
-from config import meg_dir, map_subjects, baseline, n_jobs, excludes
+from config import baseline, excludes, map_subjects, meg_dir, n_jobs
 
 
 def run_covariance(subject):

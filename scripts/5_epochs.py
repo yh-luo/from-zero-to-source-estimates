@@ -1,19 +1,20 @@
-import mne
 import os.path as op
-from mne.parallel import parallel_func
+
+import mne
 from autoreject import get_rejection_threshold
-from config import meg_dir, map_subjects, reject_tmax, event_id, tmin, tmax, baseline, n_max_ecg, n_max_eog, n_jobs, excludes
+from mne.parallel import parallel_func
+
+from config import (baseline, event_id, excludes, map_subjects, meg_dir,
+                    n_jobs, n_max_ecg, n_max_eog, reject_tmax, tmax, tmin)
 
 
 def run_epochs(subject):
     raw_fname = op.join(meg_dir, f'{subject}_audvis-filt_raw_sss.fif')
     raw = mne.io.read_raw_fif(raw_fname, preload=True, verbose='error')
-    
+
     # extract events
     # modify stim_channel for your need
-    events = mne.find_events(raw,
-                            stim_channel="STI 014",
-                            verbose='error')
+    events = mne.find_events(raw, stim_channel="STI 014", verbose='error')
 
     picks = mne.pick_types(raw.info,
                            meg=True,
@@ -36,8 +37,7 @@ def run_epochs(subject):
 
     # ICA
     ica_fname = op.join(meg_dir, f'{subject}_audvis-ica.fif')
-    ica_outname = op.join(meg_dir,
-                               f'{subject}_audvis-applied-ica.fif')
+    ica_outname = op.join(meg_dir, f'{subject}_audvis-applied-ica.fif')
     ica = mne.preprocessing.read_ica(ica_fname)
     ica.exclude = []
     try:

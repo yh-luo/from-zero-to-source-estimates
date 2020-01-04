@@ -1,9 +1,7 @@
-# To demonstrate how to run FreeSurfer anatomical pipeline,
-# High frequency SEF dataset was used.
-import subprocess
 import os
+import subprocess
 
-from config import subjects_dir, map_subjects, mri_dir
+from config import map_subjects, mri_dir, subjects_dir
 
 
 def run_command(command, log_file):
@@ -39,6 +37,7 @@ def process_subject_anat(subject_id, force=False):
             ],
             os.path.join(subject_mri_dir, f"{subject_id}_recon-all.txt"),
         )
+
 
 # NOTE: it takes hours to run on a decent computer, you can use the FreeSurfer
 # reconstruction in the dataset.

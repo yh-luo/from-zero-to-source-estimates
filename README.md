@@ -1,10 +1,9 @@
 # From Zero to Source Estimates
 
-If you have questions or want to start a discussion, please use the DISQUS comment system below [the post](https://yuhan.netlify.com/posts/from-zero-to-source-estimates/). If you want to contribute or update the contents (more than welcome!), please open a issue or even create a pull request.
+If you have questions or want to start a discussion, please use the Disqus comment system below [the post](https://yuhan.netlify.com/posts/from-zero-to-source-estimates/). If you wish to contribute or correct the contents (more than welcome!), please open an issue or create a pull request.
 
-[Overview](https://mne.tools/stable/overview/cookbook.html)
+[MNE Overview](https://mne.tools/stable/overview/cookbook.html)
 
-  - [To-Do](#to-do)
   - [Readings](#readings)
   - [FreeSurfer anatomical pipeline](#freesurfer-anatomical-pipeline)
     - [DICOMs to NifTi](#dicoms-to-nifti)
@@ -32,19 +31,24 @@ If you have questions or want to start a discussion, please use the DISQUS comme
 
 :white_large_square: Time-frequency decomposition  
 :white_large_square: Chinese translation  
-:white_large_square: More visualization
+:white_large_square: More visualization  
+:white_large_square: Publication-ready graphs
 
 ## Readings
 
 + [MNE Biomag Demo](http://mne.tools/mne-biomag-group-demo/index.html)
 + MNE [tutorials](https://mne.tools/stable/auto_tutorials/index.html) and documentation
++ Andersen, L. M. (2018). Group Analysis in MNE-Python of Evoked Responses from a Tactile Stimulation Paradigm: A Pipeline for Reproducibility at Every Step of Processing, Going from Individual Sensor Space Representations to an across-Group Source Space Representation. Frontiers in Neuroscience, 12, 6. https://doi.org/10.3389/fnins.2018.00006
++ Gramfort, A., Luessi, M., Larson, E., Engemann, D., Strohmeier, D., Brodbeck, C., Goj, R., Jas, M., Brooks, T., Parkkonen, L., & Hämäläinen, M. (2013). MEG and EEG data analysis with MNE-Python. Frontiers in Neuroscience, 7, 267. https://doi.org/10.3389/fnins.2013.00267
 + Jas, M., Larson, E., Engemann, D. A., Leppäkangas, J., Taulu, S., Hämäläinen, M., & Gramfort, A. (2018). A Reproducible MEG/EEG Group Study With the MNE Software: Recommendations, Quality Assessments, and Good Practices. Frontiers in Neuroscience, 12, 530. https://doi.org/10.3389/fnins.2018.00530
+
 
 ## FreeSurfer anatomical pipeline
 
-### DICOMs to NifTi
+### DICOM to NifTi
 
-Use any software you like. I used [dcm2nii](https://people.cas.sc.edu/rorden/mricron/dcm2nii.html) in [MRICron 2MAY2016](https://www.nitrc.org/projects/mricron).
+Usually, you will acquire dicom files (e.g., xxxx.IMG from Siemens MRI scanners) after MRI scans. Before running the FreeSurfer anatomic procedure, the DICOM files need to be converted into NifTi format.  
+Use any software you like. I used [dcm2nii](https://people.cas.sc.edu/rorden/mricron/dcm2nii.html) in [MRICron 2MAY2016](https://www.nitrc.org/projects/mricron).  
 dcm2nii works fine for me while dcm2niix adds additional bytes in the NifTi files and FreeSurfer is unable to process it sometimes.
 
 #### Notes
@@ -72,8 +76,9 @@ Or use Python scripts to call FreeSurfer (unofficially recommended by me).
 
 #### Notes
 
++ The script assumes compressed NifTi (`.nii.gz`)
 + `recon-all` takes hours (~7 hours on AMD Ryzen 5 3600) to complete!
-+ FreeSurfer uses single thread. If the cpu has multiple cores, open several terminals to process more than one subjects or use `mne.parallel.parallel_func` to loop through all the subjects.
++ FreeSurfer runs on single thread. If the cpu has multiple cores, open several terminals to process more than one subjects or use `mne.parallel.parallel_func` to loop through all the subjects.
    + Using many terminals at once works great for me.
 + Remember to [install and setup tcsh](https://surfer.nmr.mgh.harvard.edu/fswiki/SetupConfiguration_Linux) for FreeSurfer reconstructions.
 
@@ -85,12 +90,12 @@ There are two ways to create BEM surfaces:
     + Notes: Read the documentation in [`mne.bem.convert_flash_mris`](https://mne.tools/stable/generated/mne.bem.convert_flash_mris.html#mne.bem.convert_flash_mris) and [`mne.bem.make_flash_bem`](https://mne.tools/stable/generated/mne.bem.make_flash_bem.html?highlight=make_flash_bem#mne-bem-make-flash-bem)
 2. `mne.bem.make_watershed_bem` create BEM surfaces using the FreeSurfer watershed algorithm (could be less accurate).
 
+After making BEM surfaces, use them to create BEM models, BEM solutions and setup the source space.
+
 #### Notes
 
 + MNE version < 20 has a bug that makes it impossible to create watershed BEMs when `overwrite=False`.
 + I couldn't figure out how to acquire FLASH images at the moment, so I used watershed BEMs.
-
-After making BEM surfaces, use them to create BEM models, BEM solutions and setup the source space.
 
 #### Demo
 
@@ -130,8 +135,7 @@ The structure of your study directory should look like:
 
 ### Filter
 
-Most event-related brain signals are below 40 Hz. Low-pass filter with 40Hz does not affect most ERP signals of interest and attenuates the powerline frequency (60Hz in Taiwan) and all HPI coil frequencies (above 200Hz).
-Data of EOG channels would be further high-pass filtered on 1Hz to use ICA.
+Most event-related brain signals are below 40 Hz. Low-pass filter with 40 Hz does not affect most brain signals of interest and attenuates the powerline frequency (60 Hz in Taiwan, 50 Hz in some countries) and all HPI coil frequencies (above 200 Hz). To use ICA to repair artifacts, data of EOG channels would be further high-pass filtered on 1Hz .
 
 #### Demo
 
@@ -143,7 +147,6 @@ ICA is a blind source separation technique that maximizes the statistical indepe
 Because of its peaky distributions, eye blinks and heartbeats can be easily removed using ICA.
 
 + [Overview of artifact detection](https://mne.tools/stable/auto_tutorials/preprocessing/plot_10_preprocessing_overview.html)
-
 + [Repairing artifacts with ICA](https://mne.tools/stable/auto_tutorials/preprocessing/plot_40_artifact_correction_ica.html)
 
 #### Demo
@@ -195,7 +198,7 @@ The evoked responses are averaged for group averages.
 
 ### Coregistration
 
-The recommended way to use the GUI is through bash with:
+The recommended way to use the GUI is through command line with:
 
 ```bash
 mne coreg
@@ -206,8 +209,7 @@ or use `mne.gui.coregistration` to initiate the GUI.
 #### Notes
 
 + Instructions can be found in [MNE documentation](https://mne.tools/stable/generated/mne.gui.coregistration.html?highlight=coreg#mne.gui.coregistration).
-+ It is not neccessary, but may be helpful to use the high-resolution head surfaces to help coregistration.
-To do this, refer to `11_setup_head_for_coreg.py`.
++ It is not neccessary, but may be helpful to use the high-resolution head surfaces to help coregistration. To do this, refer to `11_setup_head_for_coreg.py`.
 
 ### Forward solution
 

@@ -1,10 +1,13 @@
-import mne
-import numpy as np
-from scipy import stats
 import os.path as op
 import pickle
 from functools import partial
-from config import meg_dir, subjects_dir, rst_dir, map_subjects, reject_tmax, n_jobs, excludes
+
+import mne
+import numpy as np
+from scipy import stats
+
+from config import (excludes, map_subjects, meg_dir, n_jobs, reject_tmax,
+                    rst_dir, subjects_dir)
 
 # prepare data
 aud_l = list()
@@ -17,15 +20,17 @@ for subject in subjects:
     print(f'processing {subject}')
     # auditory
     stc = mne.read_source_estimate(
-        op.join(meg_dir,
-                f'{subject}_audvis-dSPM_inverse_morph-filt-sss-aud_left_eq-stc'))
+        op.join(
+            meg_dir,
+            f'{subject}_audvis-dSPM_inverse_morph-filt-sss-aud_left_eq-stc'))
     # why `crop`: only deal with t > 0 to reduce multiple comparisons
     # why `T`: transpose to the correct shape
     aud_l.append(stc.magnitude().crop(0, None).data.T)
     # visual
     stc = mne.read_source_estimate(
-        op.join(meg_dir,
-                f'{subject}_audvis-dSPM_inverse_morph-filt-sss-vis_left_eq-stc'))
+        op.join(
+            meg_dir,
+            f'{subject}_audvis-dSPM_inverse_morph-filt-sss-vis_left_eq-stc'))
     vis_l.append(stc.magnitude().crop(0, None).data.T)
 
 # Create contrast

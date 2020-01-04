@@ -1,51 +1,54 @@
-import mne
 import os
 import os.path as op
 import shutil
 
-from config import subjects_dir, spacing
+import mne
+
+from config import spacing, subjects_dir
 
 
 def process_subject_source_space(subject):
     # make BEMs using watershed bem
-    # NOTE: Use MNE version > 20!
+    # NOTE: Use MNE version >= 20!
     mne.bem.make_watershed_bem(subject,
                                subjects_dir=subjects_dir,
                                show=False,
                                verbose=False,
                                overwrite=True)
 
+    bem_surf_fname = op.join(subjects_dir, subject, "bem",
+                             f"{subject}-ico4-bem.fif")
+    bem_sol_fname = op.join(subjects_dir, subject, "bem",
+                            f"{subject}-ico4-bem-sol.fif")
+    src_fname = op.join(subjects_dir, subject, "bem",
+                        f"{subject}-{spacing}-src.fif")
+
     # make BEM models
     # ico4 is for downsamping
-    bem_surf = mne.make_bem_model(subject,
-                                  ico=4,
-                                  conductivity=[0.3],
-                                  subjects_dir=subjects_dir)
-    mne.write_bem_surfaces(
-        f"{subjects_dir}/{subject}/bem/{subject}-ico4-bem.fif", bem_surf)
+    bem_surf = mne.make_bem_model(
+        subject,
+        ico=4,
+        conductivity=[0.3],  # for MEG data, 1 layer model is enough
+        subjects_dir=subjects_dir)
+    mne.write_bem_surfaces(bem_surf_fname, bem_surf)
     # make BEM solution
     bem_sol = mne.make_bem_solution(bem_surf)
-    mne.write_bem_solution(
-        f"{subjects_dir}/{subject}/bem/{subject}-ico4-bem-sol.fif", bem_sol)
+    mne.write_bem_solution(bem_sol_fname, bem_sol)
 
     # Create the surface source space
     src = mne.setup_source_space(subject, spacing, subjects_dir=subjects_dir)
-    mne.write_source_spaces(
-        f"{subjects_dir}/{subject}/bem/{subject}-{spacing}-src.fif",
-        src,
-        overwrite=True)
+    mne.write_source_spaces(src_fname, src, overwrite=True)
 
 
 process_subject_source_space('subject_a')
 
-
 # Create source space for fsaverage
-# If you use precomputed reconstruction, you don't need to remove the symbolic 
+# If you use precomputed reconstruction, you don't need to remove the symbolic
 # link of fsaverage.
 precomputed = True
 
 fsaverage_src_dir = op.join(os.environ['FREESURFER_HOME'], 'subjects',
-                                 'fsaverage')
+                            'fsaverage')
 fsaverage_dst_dir = op.join(subjects_dir, 'fsaverage')
 
 if not precomputed:

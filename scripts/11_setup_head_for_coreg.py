@@ -1,7 +1,7 @@
-import subprocess
 import os.path as op
+import subprocess
 
-from config import mri_dir, subjects_dir, map_subjects
+from config import map_subjects, mri_dir, subjects_dir
 
 
 def run_command(command, log_file):
@@ -23,5 +23,6 @@ def process_subject_head(subject_id):
         "--no-decimate", "--overwrite"
     ], op.join(subject_mri_dir, f"{subject_id}_make_scalp_surfaces.txt"))
     print(f"Created high-resolution head surfaces for {subject}")
+
 
 process_subject_head('sample')

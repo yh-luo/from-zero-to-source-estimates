@@ -1,7 +1,9 @@
-import mne
 import os.path as op
+
+import mne
 from mne.parallel import parallel_func
-from config import meg_dir, n_jobs, map_subjects, excludes
+
+from config import excludes, map_subjects, meg_dir, n_jobs
 
 
 def run_ica(subject):

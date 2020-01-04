@@ -1,8 +1,10 @@
-import mne
 import os.path as op
+
+import mne
 from mne.parallel import parallel_func
 
-from config import meg_dir, subjects_dir, map_subjects, spacing, mindist, n_jobs, excludes
+from config import (excludes, map_subjects, meg_dir, mindist, n_jobs, spacing,
+                    subjects_dir)
 
 
 def run_forward(subject):
@@ -17,6 +19,7 @@ def run_forward(subject):
     #                     f'{subject}-{spacing}-src.fif')
     # bem_fname = op.join(subjects_dir, subject, 'bem',
     #                          f'{subject}_audvis-ico4-bem-sol.fif')
+
     # If you are practicing with the sample dataset
     src_fname = op.join(subjects_dir, subject, 'bem',
                         f'{subject}-oct-6-src.fif')

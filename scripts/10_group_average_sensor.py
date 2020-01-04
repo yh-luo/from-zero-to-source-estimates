@@ -1,7 +1,8 @@
-import mne
 import os.path as op
 
-from config import meg_dir, map_subjects, excludes
+import mne
+
+from config import excludes, map_subjects, meg_dir
 
 # container for all the evokeds
 all_evokeds = {
@@ -21,7 +22,7 @@ subjects = [s for s in map_subjects.values() if s not in excludes]
 
 for subject in subjects:
     evokeds = mne.read_evokeds(op.join(meg_dir,
-                                            f'{subject}_audvis-filt-sss-ave.fif'),
+                                       f'{subject}_audvis-filt-sss-ave.fif'),
                                verbose='error')
     assert len(evokeds) == len(all_evokeds)
 
@@ -34,7 +35,6 @@ for condition, evokeds in all_evokeds.items():
     all_grands.append(grand_ave)
 
 # Sensor space
-mne.evoked.write_evokeds(op.join(meg_dir, 'grand_average-ave.fif'),
-                         all_grands)
+mne.evoked.write_evokeds(op.join(meg_dir, 'grand_average-ave.fif'), all_grands)
 
 print(f'Computed group averages (N = {len(subjects)})')

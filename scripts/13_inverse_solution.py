@@ -1,8 +1,10 @@
-import mne
 import os.path as op
+
+import mne
 from mne.parallel import parallel_func
 
-from config import meg_dir, subjects_dir, map_subjects, spacing, mindist, n_jobs, excludes
+from config import (excludes, map_subjects, meg_dir, mindist, n_jobs, spacing,
+                    subjects_dir)
 
 snr = 3.0
 lambda2 = 1.0 / snr**2

@@ -1,9 +1,11 @@
-import mne
 import os.path as op
+
+import mne
 import numpy as np
 from mne.parallel import parallel_func
 
-from config import meg_dir, subjects_dir, map_subjects, n_jobs, smooth, excludes
+from config import (excludes, map_subjects, meg_dir, n_jobs, smooth,
+                    subjects_dir)
 
 src = mne.read_source_spaces(
     op.join(subjects_dir, 'fsaverage', 'bem', 'fsaverage-5-src.fif'))
@@ -16,7 +18,8 @@ def morph_stc(subject):
             'aud_right_eq', 'vis_left_eq', 'vis_right_eq'
     ]:
         stc = mne.read_source_estimate(
-            op.join(meg_dir, f'{subject}_audvis-dSPM_inverse-filt-sss-{condition}'))
+            op.join(meg_dir,
+                    f'{subject}_audvis-dSPM_inverse-filt-sss-{condition}'))
 
         morphed = mne.compute_source_morph(stc,
                                            subject_from=subject,
@@ -26,8 +29,9 @@ def morph_stc(subject):
                                            smooth=smooth,
                                            verbose='error').apply(stc)
         morphed.save(
-            op.join(meg_dir,
-                    f'{subject}_audvis-dSPM_inverse_morph-filt-sss-{condition}'))
+            op.join(
+                meg_dir,
+                f'{subject}_audvis-dSPM_inverse_morph-filt-sss-{condition}'))
     print(f'Saved morphed source estimates for {subject}')
 
 

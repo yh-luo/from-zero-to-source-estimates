@@ -1,11 +1,13 @@
-import mne
-import pickle
 import os.path as op
-import numpy as np
+import pickle
 
+import mne
+import numpy as np
 from mayavi import mlab
+
 # in case jupyter kernel starts on the study directory
 from scripts.config import meg_dir, rst_dir, subjects_dir
+
 get_ipython().run_line_magic('gui', 'qt')
 
 # change the name to interested cluster result

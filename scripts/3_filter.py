@@ -1,8 +1,9 @@
-import mne
 import os
 import os.path as op
 
-from config import meg_dir, n_jobs, cal, ctc, l_freq, h_freq
+import mne
+
+from config import cal, ctc, h_freq, l_freq, meg_dir, n_jobs
 
 
 def run_maxwell_filter(subject):
@@ -12,8 +13,11 @@ def run_maxwell_filter(subject):
     raw = mne.io.read_raw_fif(raw_fname, verbose='error')
     # remove bad channels
     raw.info['bads'].extend(['MEG 1032', 'MEG 2313'])
-    raw_sss = mne.preprocessing.maxwell_filter(raw, calibration=cal, cross_talk=ctc)
+    raw_sss = mne.preprocessing.maxwell_filter(raw,
+                                               calibration=cal,
+                                               cross_talk=ctc)
     raw_sss.save(sss_fname)
+
 
 def run_filter(subject):
     raw_fname = op.join(meg_dir, f'{subject}_audvis_raw_sss.fif')

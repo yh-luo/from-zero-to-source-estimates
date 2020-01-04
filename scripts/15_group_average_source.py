@@ -1,8 +1,9 @@
-import mne
 import os.path as op
+
+import mne
 import numpy as np
 
-from config import meg_dir, map_subjects, excludes
+from config import excludes, map_subjects, meg_dir
 
 # container for all the stc
 all_stc = {
@@ -19,8 +20,9 @@ subjects = [s for s in map_subjects.values() if s not in excludes]
 for condition, stcs in all_stc.items():
     for subject in subjects:
         stc = mne.read_source_estimate(
-            op.join(meg_dir,
-                         f'{subject}_audvis-dSPM_inverse_morph-filt-sss-{condition}'))
+            op.join(
+                meg_dir,
+                f'{subject}_audvis-dSPM_inverse_morph-filt-sss-{condition}'))
         stcs.append(stc)
     data = np.average([s.data for s in stcs], axis=0)
     stc = mne.VectorSourceEstimate(data, stcs[0].vertices, stcs[0].tmin,
