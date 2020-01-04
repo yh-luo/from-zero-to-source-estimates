@@ -48,18 +48,17 @@ If you have questions or want to start a discussion, please use the Disqus comme
 ### DICOM to NifTi
 
 Usually, you will acquire dicom files (e.g., xxxx.IMG from Siemens MRI scanners) after MRI scans. Before running the FreeSurfer anatomic procedure, the DICOM files need to be converted into NifTi format.  
-Use any software you like. I used [dcm2nii](https://people.cas.sc.edu/rorden/mricron/dcm2nii.html) in [MRICron 2MAY2016](https://www.nitrc.org/projects/mricron).  
-dcm2nii works fine for me while dcm2niix adds additional bytes in the NifTi files and FreeSurfer is unable to process it sometimes.
+Use any software you like. I used [dcm2nii](https://people.cas.sc.edu/rorden/mricron/dcm2nii.html) in [MRICron 2MAY2016](https://www.nitrc.org/projects/mricron). dcm2nii works fine for me while dcm2niix adds additional bytes in the NifTi files and FreeSurfer is unable to process it sometimes.
 
 #### Notes
 
-Though `mri_convert` in FreeSurfer can convert DICOMs to NifTi, the output are sometimes problematic and FreeSurfer is unable to reconstruct the surfaces using it.
+Though `mri_convert` in FreeSurfer can convert DICOM to NifTi, the output files are sometimes problematic and FreeSurfer is unable to run the reconstruction on it.
 
 ### FreeSurfer Anatomical reconstructions
 
 Use command line:
 
-```bash
+```
 recon-all -all -s sample -i sample.nii.gz
 ```
 
@@ -69,8 +68,7 @@ Or use Python scripts to call FreeSurfer (unofficially recommended by me).
 
 + Data
   + DICOM from [High frequency SEF dataset](https://mne.tools/stable/overview/datasets_index.html?highlight=dicom#high-frequency-sef)
-  + subject_a.nii.gz or subject_b.nii.gz (converted from DICOM)
-
+  + subject_a.nii.gz or subject_b.nii.gz (manually converted from DICOM)
 + `0_fetch_dataset.py` to get dataset
 + `1_anatomical_construction.py`
 
@@ -87,7 +85,7 @@ Or use Python scripts to call FreeSurfer (unofficially recommended by me).
 There are two ways to create BEM surfaces:
 
 1. `mne.bem.make_flash_bem` requires additional processes to prepare fast low-angle shot (FLASH) images.
-    + Notes: Read the documentation in [`mne.bem.convert_flash_mris`](https://mne.tools/stable/generated/mne.bem.convert_flash_mris.html#mne.bem.convert_flash_mris) and [`mne.bem.make_flash_bem`](https://mne.tools/stable/generated/mne.bem.make_flash_bem.html?highlight=make_flash_bem#mne-bem-make-flash-bem)
+    + Read the documentation in [`mne.bem.convert_flash_mris`](https://mne.tools/stable/generated/mne.bem.convert_flash_mris.html#mne.bem.convert_flash_mris) and [`mne.bem.make_flash_bem`](https://mne.tools/stable/generated/mne.bem.make_flash_bem.html?highlight=make_flash_bem#mne-bem-make-flash-bem)
 2. `mne.bem.make_watershed_bem` create BEM surfaces using the FreeSurfer watershed algorithm (could be less accurate).
 
 After making BEM surfaces, use them to create BEM models, BEM solutions and setup the source space.
@@ -101,7 +99,6 @@ After making BEM surfaces, use them to create BEM models, BEM solutions and setu
 
 + Data
   + FreeSurfer reconstruction of subject_a or subject_b
-
 + `2_setup_source_space.py`
 
 ## Preprocessing MEG data
@@ -155,8 +152,7 @@ Because of its peaky distributions, eye blinks and heartbeats can be easily remo
 
 ### Epoching and baseline correction
 
-Extract events using `mne.find_events` and create epochs based on the events.
-ECG and EOG events are also detected in this stage and excluded from the ICA to prevent the noise from spreading to all signals. It is common practice to use baseline correction so that any constant offsets in the baseline are removed.
+Extract events using `mne.find_events` and create epochs based on the events. ECG and EOG events are also detected in this stage and excluded from the ICA to prevent the noise from spreading to all signals. It is common practice to use baseline correction so that any constant offsets in the baseline are removed.
 
 #### Demo
 
@@ -200,7 +196,7 @@ The evoked responses are averaged for group averages.
 
 The recommended way to use the GUI is through command line with:
 
-```bash
+```
 mne coreg
 ```
 
@@ -208,7 +204,7 @@ or use `mne.gui.coregistration` to initiate the GUI.
 
 #### Notes
 
-+ Instructions can be found in [MNE documentation](https://mne.tools/stable/generated/mne.gui.coregistration.html?highlight=coreg#mne.gui.coregistration).
++ Instructions of coregistration can be found in [MNE documentation](https://mne.tools/stable/generated/mne.gui.coregistration.html?highlight=coreg#mne.gui.coregistration).
 + It is not neccessary, but may be helpful to use the high-resolution head surfaces to help coregistration. To do this, refer to `11_setup_head_for_coreg.py`.
 
 ### Forward solution
@@ -255,6 +251,10 @@ Test if the evoked reponses are significantly different between conditions acros
 
 + `16_statistics.py`
 + `16-2_viz_statistics.py`
+
+#### Notes
+
++ [Statistical inference](https://mne.tools/stable/auto_tutorials/discussions/plot_background_statistics.html#statistical-inference)
 
 ## Write reports
 
