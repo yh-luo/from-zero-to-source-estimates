@@ -1,3 +1,4 @@
+import os
 import os.path as op
 import pickle
 
@@ -28,6 +29,7 @@ with open(clu_fname, 'rb') as f:
 
 good_cluster_inds = np.where(cluster_result['cluster_p_values'] < 0.05)
 
+os.environ["SUBJECTS_DIR"] = subjects_dir
 stc_all_cluster_vis = mne.stats.summarize_clusters_stc(
     cluster_result['clu'],
     tstep=tstep,

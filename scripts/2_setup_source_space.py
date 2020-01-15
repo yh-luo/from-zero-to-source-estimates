@@ -9,7 +9,7 @@ from config import spacing, subjects_dir
 
 def process_subject_source_space(subject):
     # make BEMs using watershed bem
-    # NOTE: Use MNE version >= 20!
+    # NOTE: Use MNE version >= 20 or set overwrite=True!
     mne.bem.make_watershed_bem(subject,
                                subjects_dir=subjects_dir,
                                show=False,
@@ -27,7 +27,7 @@ def process_subject_source_space(subject):
     # ico4 is for downsamping
     bem_surf = mne.make_bem_model(
         subject,
-        ico=4,
+        ico=4,  # 5120
         conductivity=[0.3],  # for MEG data, 1 layer model is enough
         subjects_dir=subjects_dir)
     mne.write_bem_surfaces(bem_surf_fname, bem_surf)

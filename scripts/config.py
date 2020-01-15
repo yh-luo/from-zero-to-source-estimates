@@ -13,8 +13,9 @@ rst_dir = op.join(study_dir, 'results')
 l_freq = None
 h_freq = 40
 
+# NOTE: https://mne.tools/stable/overview/cookbook.html#setting-up-the-source-space
 spacing = "oct6"
-mindist = 5
+mindist = 5  # because oct6 means the source spacing is 4.9 mm
 
 # Subject mapping
 map_subjects = {"subject_a": "subject_a", "sample": "sample"}

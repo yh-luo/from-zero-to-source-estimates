@@ -16,6 +16,7 @@ vis_l = list()
 subjects = [s for s in map_subjects.values() if s not in excludes]
 # For demonstration purpose, the data are simultated to create 10 subjects
 subjects = subjects * 10
+# NOTE: the simulation data takes approx. 8 G memory
 for subject in subjects:
     print(f'processing {subject}')
     # auditory

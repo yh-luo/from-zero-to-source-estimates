@@ -1,4 +1,5 @@
 import os
+import os.path as op
 import subprocess
 
 from config import map_subjects, mri_dir, subjects_dir
@@ -16,10 +17,10 @@ def run_command(command, log_file):
 
 
 def process_subject_anat(subject_id, force=False):
-    subject_mri_dir = os.path.join(mri_dir, subject_id)
+    subject_mri_dir = op.join(mri_dir, subject_id)
     subject = map_subjects[subject_id]
 
-    if os.path.isdir(os.path.join(subjects_dir, subject)) and not force:
+    if op.isdir(op.join(subjects_dir, subject)) and not force:
         print(f"Skipping reconstruction for {subject_id} (folder exist)")
     else:
         # Run recon-all
@@ -33,9 +34,9 @@ def process_subject_anat(subject_id, force=False):
                 "-sd",
                 subjects_dir,
                 "-i",
-                os.path.join(subject_mri_dir, f"{subject_id}.nii.gz"),
+                op.join(subject_mri_dir, f"{subject_id}.nii.gz"),
             ],
-            os.path.join(subject_mri_dir, f"{subject_id}_recon-all.txt"),
+            op.join(subject_mri_dir, f"{subject_id}_recon-all.txt"),
         )
 
 
