@@ -3,7 +3,8 @@ import os.path as op
 
 import numpy as np
 
-# REVIEW: will os.getcwd() always work?
+# REVIEW: will os.getcwd() always work? No.
+# Please modify your study directory
 study_dir = os.getcwd()
 subjects_dir = op.join(study_dir, "subjects")
 mri_dir = op.join(study_dir, "MRI")
