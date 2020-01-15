@@ -30,7 +30,6 @@ def run_epochs(subject):
         tmin=tmin,
         tmax=tmax,
         baseline=baseline,
-        decim=5,  # downsample to 400Hz (2000/5)
         preload=False,
         reject_tmax=reject_tmax,
         verbose='error')
@@ -47,7 +46,6 @@ def run_epochs(subject):
                                                          tmax=.3,
                                                          preload=False,
                                                          verbose='error')
-        ecg_epochs.decimate(5)
         ecg_epochs.load_data()
         ecg_epochs.apply_baseline((None, None))
         ecg_inds, scores_ecg = ica.find_bads_ecg(ecg_epochs,
@@ -75,7 +73,6 @@ def run_epochs(subject):
                                                          tmax=.3,
                                                          preload=False,
                                                          verbose='error')
-        eog_epochs.decimate(5)
         eog_epochs.load_data()
         eog_epochs.apply_baseline((None, None))
         eog_inds, scores_eog = ica.find_bads_eog(eog_epochs, verbose='error')
