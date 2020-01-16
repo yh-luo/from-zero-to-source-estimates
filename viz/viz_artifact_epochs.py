@@ -1,9 +1,12 @@
+# import os
+# os.chdir('../')
 import os.path as op
 
 import mne
 from scripts.config import meg_dir
 
-get_ipython().run_line_magic('matplotlib', 'qt')
+# for vs code interactive terminal
+# get_ipython().run_line_magic('matplotlib', 'qt')
 
 
 def show_ecg_evoked(subject):

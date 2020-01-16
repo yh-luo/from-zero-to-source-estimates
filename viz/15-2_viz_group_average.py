@@ -1,14 +1,14 @@
+import os
+# os.chdir('../')
 import os.path as op
 
 import mne
-from mayavi import mlab
 
-# if you run this script in the study dir
-from scripts.config import baseline, meg_dir
+from scripts.config import baseline, meg_dir, subjects_dir
 
-# jupyter notebook setup
-get_ipython().run_line_magic('matplotlib', 'qt')
-get_ipython().run_line_magic('gui', 'qt')
+# for vs code interactive terminal
+# get_ipython().run_line_magic('matplotlib', 'qt')
+# get_ipython().run_line_magic('gui', 'qt')
 
 evokeds = mne.read_evokeds(op.join(meg_dir, 'grand_average-ave.fif'))
 
@@ -26,6 +26,7 @@ mapping = {
 mne.viz.plot_compare_evokeds(mapping)
 
 # Source space contrast
+os.environ["SUBJECTS_DIR"] = subjects_dir
 stc_aud = mne.read_source_estimate(
     op.join(meg_dir, 'aud_left_minus_right-grand_average-ave-stc'))
 stc_aud.plot(hemi='both', initial_time=0.1)
