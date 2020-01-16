@@ -2,7 +2,15 @@
 
 If you have questions or want to start a discussion, please use the Disqus comment system below [the post](https://yuhan.netlify.com/posts/from-zero-to-source-estimates/). If you wish to contribute or correct the contents (more than welcome!), please open an issue or create a pull request.
 
-[MNE Overview](https://mne.tools/stable/overview/cookbook.html)
+## Project overview
+
++ `scripts`: python scripts for processing
++ `viz`: python scripts and jupyter notebooks for visulization
++ `README.md`: instruction and some notes
+
+## Table of Contents
+
+[The typical M/EEG workflow](https://mne.tools/stable/overview/cookbook.html)
 
   - [Readings](#readings)
   - [FreeSurfer anatomical pipeline](#freesurfer-anatomical-pipeline)
