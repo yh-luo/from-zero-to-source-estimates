@@ -50,7 +50,6 @@ def run_epochs(subject):
         ecg_epochs.apply_baseline((None, None))
         ecg_inds, scores_ecg = ica.find_bads_ecg(ecg_epochs,
                                                  method='ctps',
-                                                 threshold=0.8,
                                                  verbose='error')
     except ValueError:
         pass
