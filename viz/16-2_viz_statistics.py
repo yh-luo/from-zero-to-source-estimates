@@ -1,5 +1,4 @@
 import os
-# os.chdir('../')
 import os.path as op
 import pickle
 
@@ -33,4 +32,5 @@ stc_all_cluster_vis = mne.stats.summarize_clusters_stc(
     vertices=fsaverage_vertices,
     subject='fsaverage')
 # it's unrealistic but beautiful ?!
-stc_all_cluster_vis.plot(hemi='both')
+stc_all_cluster_vis.plot(hemi='both', views='lateral', time_label='temporal extent (ms)', size=(800, 800),
+    smoothing_steps=5, clim=dict(kind='value', pos_lims=[0, 1, 40]))
