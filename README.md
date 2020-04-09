@@ -6,7 +6,7 @@ If you have questions or want to start a discussion, please use the Disqus comme
 
 + `scripts`: python scripts for processing
 + `viz`: python scripts and jupyter notebooks for visulization
-+ `README.md`: instruction and some notes
++ `README.md`: instructions and some notes
 
 ## Table of Contents
 
@@ -55,8 +55,8 @@ If you have questions or want to start a discussion, please use the Disqus comme
 
 ### DICOM to NifTi
 
-Usually, you will acquire dicom files (e.g., xxxx.IMG from Siemens MRI scanners) after MRI scans. Before running the FreeSurfer anatomic procedure, the DICOM files need to be converted into NifTi format.  
-Use any software you like. I used [dcm2nii](https://people.cas.sc.edu/rorden/mricron/dcm2nii.html) in [MRICron 2MAY2016](https://www.nitrc.org/projects/mricron). dcm2nii works fine for me while dcm2niix adds additional bytes in the NifTi files and FreeSurfer is unable to process it sometimes.
+Usually, you will acquire dicom files (e.g., xxxx.IMG from Siemens MRI scanners) after MRI scans. Before running the FreeSurfer anatomic procedure, the dicom files need to be converted into NifTi format.  
+Use any software you like. I used [dcm2niix](https://github.com/rordenlab/dcm2niix) included in [MRIcroGL](https://www.nitrc.org/projects/mricrogl/) at the moment (2020). For older dataset (e.g., data collected in 2016), I used [dcm2nii](https://people.cas.sc.edu/rorden/mricron/dcm2nii.html) in [MRICron 2MAY2016](https://www.nitrc.org/projects/mricron). Mysteriously, dcm2nii works fine on old data while dcm2niix adds additional bytes in the NifTi files and FreeSurfer is unable to process it sometimes.
 
 #### Notes
 
@@ -70,13 +70,17 @@ Use command line:
 recon-all -all -s sample -i sample.nii.gz
 ```
 
-Or use Python scripts to call FreeSurfer (unofficially recommended by me).
+Or use Python scripts to call FreeSurfer.
+
+#### Notes
+
+If the reconstruction looks incorrect, you may need to adjust the results or the parameters used in reconstruction manually. Refer to [My watershed BEM meshes look incorrect](https://mne.tools/dev/overview/faq.html#my-watershed-bem-meshes-look-incorrect) for advices.
 
 #### Demo
 
 + Data
-  + DICOM from [High frequency SEF dataset](https://mne.tools/stable/overview/datasets_index.html?highlight=dicom#high-frequency-sef)
-  + subject_a.nii.gz or subject_b.nii.gz (manually converted from DICOM)
+  + dicom files from [High frequency SEF dataset](https://mne.tools/stable/overview/datasets_index.html?highlight=dicom#high-frequency-sef)
+  + subject_a.nii.gz or subject_b.nii.gz (manually converted to compressed NifTi from dicom files of T1)
 + `0_fetch_dataset.py` to get dataset
 + `1_anatomical_construction.py`
 
@@ -115,7 +119,7 @@ After making BEM surfaces, use them to create BEM models, BEM solutions and setu
 
 #### Real data
 
-If you are from NTU like me, the data are assumed **Maxwell filtered** using SSS with MaxFilter provided by Elekta.
+If you are from NTU (National Taiwan University) like me, the data are assumed **Maxwell filtered** using SSS (or tSSS) with MaxFilter provided by Elekta.
 
 #### Practice
 
@@ -176,7 +180,7 @@ The epochs are averaged across conditions to create evoked responses for each su
 
 ### Compute baseline covariance
 
-Becauase inverse solvers usually assume Gaussian noise distribution, M/EEG signals require a whitening step due to the  nature of being highly spatially correlated. To denoise the data, one must provide an estimate of the spatial noise covariance matrix. Empty-room recordings for MEG or pre-stimulus period can be used to compute such information.
+Becauase inverse solvers usually assume Gaussian noise distribution, M/EEG signals require a whitening step due to the nature of being highly spatially correlated. To denoise the data, one must provide an estimate of the spatial noise covariance matrix. Empty-room recordings for MEG or pre-stimulus period can be used to compute such information.
 Here, the pre-stimulus period (baseline) is used.
 
 #### Demo
