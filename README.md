@@ -55,7 +55,7 @@ If you have questions or want to start a discussion, please use the Disqus comme
 
 ### DICOM to NifTi
 
-Usually, you will acquire dicom files (e.g., xxxx.IMG from Siemens MRI scanners) after MRI scans. Before running the FreeSurfer anatomic procedure, the dicom files need to be converted into NifTi format.  
+Usually, dicom files (e.g., xxxx.IMG from Siemens MRI scanners) are provided after MRI scans. Before running the FreeSurfer anatomic procedure, you need to convert the dicom files into NifTi format.  
 Use any software you like. I used [dcm2niix](https://github.com/rordenlab/dcm2niix) included in [MRIcroGL](https://www.nitrc.org/projects/mricrogl/) at the moment (2020). For older dataset (e.g., data collected in 2016), I used [dcm2nii](https://people.cas.sc.edu/rorden/mricron/dcm2nii.html) in [MRICron 2MAY2016](https://www.nitrc.org/projects/mricron). Mysteriously, dcm2nii works fine on old data while dcm2niix adds additional bytes in the NifTi files and FreeSurfer is unable to process it sometimes.
 
 #### Notes
@@ -88,7 +88,7 @@ If the reconstruction looks incorrect, you may need to adjust the results or the
 
 + The script assumes compressed NifTi (`.nii.gz`)
 + `recon-all` takes hours (~7 hours on AMD Ryzen 5 3600) to complete!
-+ FreeSurfer runs on single thread. If the cpu has multiple cores, open several terminals to process more than one subjects or use `mne.parallel.parallel_func` to loop through all the subjects.
++ FreeSurfer runs on a single thread. If the cpu has multiple cores, open several terminals to process more than one subjects or use `mne.parallel.parallel_func` to loop through all the subjects.
    + Using many terminals at once works great for me.
 + Remember to [install and setup tcsh](https://surfer.nmr.mgh.harvard.edu/fswiki/SetupConfiguration_Linux) for FreeSurfer reconstructions.
 
@@ -144,7 +144,7 @@ The structure of your study directory should look like:
 
 ### Filter
 
-Most event-related brain signals are below 40 Hz. Low-pass filter with 40 Hz does not affect most brain signals of interest and attenuates the powerline frequency (60 Hz in Taiwan, 50 Hz in some countries) and all HPI coil frequencies (above 200 Hz). To use ICA to repair artifacts, data of EOG channels would be further high-pass filtered on 1Hz .
+Most event-related brain signals are below 40 Hz. Low-pass filter with 40 Hz does not affect most brain signals of interest and attenuates the powerline frequency (60 Hz in Taiwan, 50 Hz in some countries) and all HPI coil frequencies (above 200 Hz). To use ICA to repair artifacts, data of EOG channels would be further high-pass filtered on 1Hz.
 
 #### Demo
 
@@ -152,8 +152,7 @@ Most event-related brain signals are below 40 Hz. Low-pass filter with 40 Hz doe
 
 ### Repairing artifacts with ICA
 
-ICA is a blind source separation technique that maximizes the statistical independence between the components.
-Because of its peaky distributions, eye blinks and heartbeats can be easily removed using ICA.
+ICA is a blind source separation technique that maximizes the statistical independence between the components. Because of its peaky distributions, eye blinks and heartbeats can be easily removed using ICA.
 
 + [Overview of artifact detection](https://mne.tools/stable/auto_tutorials/preprocessing/plot_10_preprocessing_overview.html)
 + [Repairing artifacts with ICA](https://mne.tools/stable/auto_tutorials/preprocessing/plot_40_artifact_correction_ica.html)
