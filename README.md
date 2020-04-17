@@ -216,7 +216,7 @@ or use `mne.gui.coregistration` to initiate the GUI.
 #### Notes
 
 + Instructions of coregistration can be found in [MNE documentation](https://mne.tools/stable/generated/mne.gui.coregistration.html?highlight=coreg#mne.gui.coregistration).
-+ It is not neccessary, but may be helpful to use the high-resolution head surfaces to help coregistration. To do this, refer to `11_setup_head_for_coreg.py`.
++ It is not neccessary, but may be helpful to use the high-resolution head surfaces to help coregistration. To do this, refer to `11_setup_head_for_coreg.py` and [`mne make_scalp_surfaces`](https://mne.tools/dev/generated/commands.html#mne-make-scalp-surfaces).
 
 ### Forward solution
 
