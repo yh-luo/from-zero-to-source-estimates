@@ -24,7 +24,7 @@ def process_subject_head(subject_id):
     # When practice with defaced data, use "--no-decimate" option.
     run_command([
         "mne", "make_scalp_surfaces", "-s", subject, "-d", subjects_dir,
-        "--force"
+        "--force", "--verbose"
     ], op.join(subject_mri_dir, f"{subject_id}_make_scalp_surfaces.txt"))
     print(f"Created high-resolution head surfaces for {subject}")
 
