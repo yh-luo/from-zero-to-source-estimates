@@ -7,8 +7,8 @@ from config import baseline, excludes, map_subjects, meg_dir, n_jobs
 
 
 def run_covariance(subject):
-    epo_fname = op.join(meg_dir, f'{subject}_audvis-filt-sss-epo.fif')
-    cov_fname = op.join(meg_dir, f'{subject}_audvis-filt-sss-cov.fif')
+    epo_fname = op.join(meg_dir, subject, f'{subject}_audvis-filt-sss-epo.fif')
+    cov_fname = op.join(meg_dir, subject, f'{subject}_audvis-filt-sss-cov.fif')
     epochs = mne.read_epochs(epo_fname, preload=True, verbose='error')
     cov = mne.compute_covariance(epochs,
                                  tmin=baseline[0],

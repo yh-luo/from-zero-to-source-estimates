@@ -7,8 +7,9 @@ from config import excludes, map_subjects, meg_dir, n_jobs
 
 
 def run_evoked(subject):
-    epo_fname = op.join(meg_dir, f'{subject}_audvis-filt-sss-epo.fif')
-    evoked_fname = op.join(meg_dir, f'{subject}_audvis-filt-sss-ave.fif')
+    epo_fname = op.join(meg_dir, subject, f'{subject}_audvis-filt-sss-epo.fif')
+    evoked_fname = op.join(meg_dir, subject,
+                           f'{subject}_audvis-filt-sss-ave.fif')
     epochs = mne.read_epochs(epo_fname, preload=True)
 
     # define evokeds
@@ -28,7 +29,8 @@ def run_evoked(subject):
     evoked_ar_eq = epochs_eq['Auditory/Right'].average()
     evoked_vl_eq = epochs_eq['Visual/Left'].average()
     evoked_vr_eq = epochs_eq['Visual/Right'].average()
-    assert evoked_al_eq.nave == evoked_ar_eq.nave == evoked_vl_eq.nave == evoked_vr_eq.nave
+    assert evoked_al_eq.nave == evoked_ar_eq.nave == evoked_vl_eq.nave
+    assert evoked_al_eq.nave == evoked_vr_eq.nave
 
     # simplify comment
     evoked_al.comment = 'aud_left'

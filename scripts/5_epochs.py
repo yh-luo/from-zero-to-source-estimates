@@ -9,9 +9,11 @@ from config import (baseline, event_id, excludes, map_subjects, meg_dir,
 
 
 def run_epochs(subject):
-    raw_fname = op.join(meg_dir, f'{subject}_audvis-filt_raw_sss.fif')
+    raw_fname = op.join(meg_dir, subject, f'{subject}_audvis-filt_raw_sss.fif')
+    annot_fname = op.join(meg_dir, subject, f'{subject}_audvis-annot.fif')
     raw = mne.io.read_raw_fif(raw_fname, preload=True, verbose='error')
-
+    annot = mne.read_annotations(annot_fname)
+    raw.set_annotations(annot)
     # extract events
     # modify stim_channel for your need
     events = mne.find_events(raw, stim_channel="STI 014", verbose='error')
@@ -22,34 +24,34 @@ def run_epochs(subject):
                            ecg=True,
                            stim=False,
                            exclude=['bads'])
-    epochs = mne.Epochs(
-        raw,
-        events=events,
-        picks=picks,
-        event_id=event_id,
-        tmin=tmin,
-        tmax=tmax,
-        baseline=baseline,
-        preload=False,
-        reject_tmax=reject_tmax,
-        verbose='error')
+    epochs = mne.Epochs(raw,
+                        events=events,
+                        picks=picks,
+                        event_id=event_id,
+                        tmin=tmin,
+                        tmax=tmax,
+                        baseline=baseline,
+                        preload=False,
+                        reject_tmax=reject_tmax,
+                        reject_by_annotation=True,
+                        verbose='error')
 
     # ICA
-    ica_fname = op.join(meg_dir, f'{subject}_audvis-ica.fif')
-    ica_outname = op.join(meg_dir, f'{subject}_audvis-applied-ica.fif')
+    ica_fname = op.join(meg_dir, subject, f'{subject}_audvis-ica.fif')
+    ica_outname = op.join(meg_dir, subject,
+                          f'{subject}_audvis-applied-ica.fif')
     ica = mne.preprocessing.read_ica(ica_fname)
     ica.exclude = []
     try:
         # ECG
         ecg_epochs = mne.preprocessing.create_ecg_epochs(raw,
-                                                         tmin=-.3,
-                                                         tmax=.3,
                                                          preload=False,
                                                          verbose='error')
         ecg_epochs.load_data()
         ecg_epochs.apply_baseline((None, None))
         ecg_inds, scores_ecg = ica.find_bads_ecg(ecg_epochs,
                                                  method='ctps',
+                                                 threshold=0.8,
                                                  verbose='error')
     except ValueError:
         pass
@@ -62,14 +64,12 @@ def run_epochs(subject):
                 ica.exclude.extend(ecg_inds[:len(ecg_inds)])
             # for future inspection
             ecg_epochs.average().save(
-                op.join(meg_dir, f'{subject}_audvis-ecg-ave.fif'))
+                op.join(meg_dir, subject, f'{subject}_audvis-ecg-ave.fif'))
             del ecg_epochs, ecg_inds, scores_ecg  # release memory
 
     try:
         # EOG
         eog_epochs = mne.preprocessing.create_eog_epochs(raw,
-                                                         tmin=-.3,
-                                                         tmax=.3,
                                                          preload=False,
                                                          verbose='error')
         eog_epochs.load_data()
@@ -86,7 +86,7 @@ def run_epochs(subject):
                 ica.exclude.extend(eog_inds[:len(eog_inds)])
             # for future inspection
             eog_epochs.average().save(
-                op.join(meg_dir, f'{subject}_audvis-eog-ave.fif'))
+                op.join(meg_dir, subject, f'{subject}_audvis-eog-ave.fif'))
             del eog_epochs, eog_inds, scores_eog  # release memory
 
     del raw  # to release memory
@@ -98,9 +98,11 @@ def run_epochs(subject):
     reject = get_rejection_threshold(epochs.copy().crop(None, reject_tmax))
     epochs.drop_bad(reject=reject, verbose='error')
     print(
-        f'    Dropped {round(epochs.drop_log_stats(), 1)}% of epochs for {subject}'
-    )
-    epochs.save(op.join(meg_dir, f'{subject}_audvis-filt-sss-epo.fif'),
+        '\n',
+        f"Dropped {subject}'s {round(epochs.drop_log_stats(), 1)}% of epochs",
+        '\n')
+    epochs.save(op.join(meg_dir, subject,
+                        f'{subject}_audvis-filt-sss-epo.fif'),
                 overwrite=True)
 
 

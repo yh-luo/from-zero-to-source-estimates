@@ -21,7 +21,7 @@ all_grands = list()
 subjects = [s for s in map_subjects.values() if s not in excludes]
 
 for subject in subjects:
-    evokeds = mne.read_evokeds(op.join(meg_dir,
+    evokeds = mne.read_evokeds(op.join(meg_dir, subject,
                                        f'{subject}_audvis-filt-sss-ave.fif'),
                                verbose='error')
     assert len(evokeds) == len(all_evokeds)

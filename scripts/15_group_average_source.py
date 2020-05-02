@@ -21,7 +21,7 @@ for condition, stcs in all_stc.items():
     for subject in subjects:
         stc = mne.read_source_estimate(
             op.join(
-                meg_dir,
+                meg_dir, subject,
                 f'{subject}_audvis-dSPM_inverse_morph-filt-sss-{condition}'))
         stcs.append(stc)
     data = np.average([s.data for s in stcs], axis=0)

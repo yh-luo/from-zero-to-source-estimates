@@ -8,11 +8,14 @@ from config import (excludes, map_subjects, meg_dir, mindist, n_jobs, spacing,
 
 
 def run_forward(subject):
-    evoked_fname = op.join(meg_dir, f'{subject}_audvis-filt-sss-ave.fif')
-    fwd_fname = op.join(meg_dir, f'{subject}_audvis-{spacing}-fwd.fif')
+    evoked_fname = op.join(meg_dir, subject,
+                           f'{subject}_audvis-filt-sss-ave.fif')
+    fwd_fname = op.join(meg_dir, subject,
+                        f'{subject}_audvis-{spacing}-fwd.fif')
     # If coregistration was done manually, change it to the file name
-    # If use the provided trans file from sample dataset, remember to put the trans file in MEG/
-    trans_fname = op.join(meg_dir, f'{subject}_audvis_raw-trans.fif')
+    # If use the provided trans file from sample dataset, remember to put the
+    # trans file in MEG/
+    trans_fname = op.join(meg_dir, subject, f'{subject}_audvis_raw-trans.fif')
 
     # If you follow the step in 2_setup_source_space.py
     # src_fname = op.join(subjects_dir, subject, 'bem',
