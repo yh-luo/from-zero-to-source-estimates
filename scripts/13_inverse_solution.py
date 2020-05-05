@@ -3,18 +3,20 @@ import os.path as op
 import mne
 from mne.parallel import parallel_func
 
-from config import (excludes, map_subjects, meg_dir, mindist, n_jobs, spacing,
-                    subjects_dir)
+from config import excludes, map_subjects, meg_dir, n_jobs, spacing
 
 snr = 3.0
 lambda2 = 1.0 / snr**2
 
 
 def run_inverse(subject):
-    evoked_fname = op.join(meg_dir, f'{subject}_audvis-filt-sss-ave.fif')
-    cov_fname = op.join(meg_dir, f'{subject}_audvis-filt-sss-cov.fif')
-    fwd_fname = op.join(meg_dir, f'{subject}_audvis-{spacing}-fwd.fif')
-    inv_fname = op.join(meg_dir, f'{subject}_audvis-{spacing}-inv.fif')
+    evoked_fname = op.join(meg_dir, subject,
+                           f'{subject}_audvis-filt-sss-ave.fif')
+    cov_fname = op.join(meg_dir, subject, f'{subject}_audvis-filt-sss-cov.fif')
+    fwd_fname = op.join(meg_dir, subject,
+                        f'{subject}_audvis-{spacing}-fwd.fif')
+    inv_fname = op.join(meg_dir, subject,
+                        f'{subject}_audvis-{spacing}-inv.fif')
 
     evokeds = mne.read_evokeds(evoked_fname,
                                condition=[
@@ -43,7 +45,7 @@ def run_inverse(subject):
                                              verbose='error')
         stc.save(
             op.join(
-                meg_dir,
+                meg_dir, subject,
                 f'{subject}_audvis-dSPM_inverse-filt-sss-{evoked.comment}'))
     print(f'Saved source estimates for {subject}')
 

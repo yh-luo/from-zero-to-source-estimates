@@ -13,7 +13,7 @@ def run_ica(subject):
     # Because the data were Maxwell filtered,
     # higher threshold would be reasonable.
     n_components = 0.999
-    ica_name = op.join(meg_dir, f'{subject}_audvis-ica.fif')
+    ica_name = op.join(meg_dir, subject, f'{subject}_audvis-ica.fif')
     ica = mne.preprocessing.ICA(n_components=n_components, max_iter=400)
     # Only remove ECG artifacts for now
     picks = mne.pick_types(raw.info,

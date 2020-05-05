@@ -1,13 +1,12 @@
 import os.path as op
-import pickle
 from functools import partial
 
 import mne
 import numpy as np
 from scipy import stats
 
-from config import (excludes, map_subjects, meg_dir, n_jobs, reject_tmax,
-                    rst_dir, subjects_dir)
+from config import (excludes, map_subjects, meg_dir, n_jobs, rst_dir,
+                    subjects_dir)
 
 # prepare data
 aud_l = list()
@@ -22,7 +21,7 @@ for subject in subjects:
     # auditory
     stc = mne.read_source_estimate(
         op.join(
-            meg_dir,
+            meg_dir, subject,
             f'{subject}_audvis-dSPM_inverse_morph-filt-sss-aud_left_eq-stc'))
     # why `crop`: only deal with t > 0 to reduce multiple comparisons
     # why `T`: transpose to the correct shape
@@ -30,7 +29,7 @@ for subject in subjects:
     # visual
     stc = mne.read_source_estimate(
         op.join(
-            meg_dir,
+            meg_dir, subject,
             f'{subject}_audvis-dSPM_inverse_morph-filt-sss-vis_left_eq-stc'))
     vis_l.append(stc.magnitude().crop(0, None).data.T)
 
@@ -50,24 +49,25 @@ t_threshold = -stats.distributions.t.ppf(p_threshold / 2., n_subjects - 1)
 # To use TFCE, set threshold=threshold_tfce
 # threshold_tfce = dict(start=0, step=0.2)
 
-# To use the “hat” adjustment method, a value of sigma=1e-3 may be a reasonable choice.
+# To use the "hat" adjustment method, sigma=1e-3 may be reasonable
 stat_fun = partial(mne.stats.ttest_1samp_no_p, sigma=1e-3)
 
 # Permutation test takes a long time to finish!
-T_obs, clusters, cluster_p_values, H0 = clu = \
-    mne.stats.spatio_temporal_cluster_1samp_test(contrast_X, connectivity=connectivity,
-        n_jobs=n_jobs, threshold=t_threshold, stat_fun=stat_fun, buffer_size=None, step_down_p=0.05,
-        verbose=True)
+t_obs, clusters, cluster_pv, H0 = mne.stats.spatio_temporal_cluster_1samp_test(
+    contrast_X,
+    connectivity=connectivity,
+    n_jobs=n_jobs,
+    threshold=t_threshold,
+    stat_fun=stat_fun,
+    step_down_p=0.05,
+    verbose=True)
 
 # save the result
 window = '0_to_None'
 contrast_name = 'left_auditory_vs_visual'
-cluster_name = op.join(rst_dir, f'{contrast_name}_{window}.cluster')
-cluster_result = dict(T_obs=T_obs,
-                      clusters=clusters,
-                      cluster_p_values=cluster_p_values,
-                      H0=H0,
-                      clu=clu)
-
-with open(cluster_name, 'wb') as f:
-    pickle.dump(cluster_result, f)
+cluster_name = op.join(rst_dir, f'{contrast_name}_{window}.npz')
+np.savez(cluster_name,
+         t_obs=t_obs,
+         clusters=clusters,
+         cluster_pv=cluster_pv,
+         H0=H0)

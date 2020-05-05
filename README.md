@@ -14,17 +14,20 @@ If you have questions or want to start a discussion, please use the Disqus comme
 
   - [Readings](#readings)
   - [FreeSurfer anatomical pipeline](#freesurfer-anatomical-pipeline)
-    - [DICOMs to NifTi](#dicoms-to-nifti)
+    - [DICOM to NifTi](#dicom-to-nifti)
     - [FreeSurfer Anatomical reconstructions](#freesurfer-anatomical-reconstructions)
     - [Make BEMs and set up the source space](#make-bems-and-set-up-the-source-space)
   - [Preprocessing MEG data](#preprocessing-meg-data)
     - [Prerequisite](#prerequisite)
-    - [Filter](#filter)
+      - [Real data](#real-data)
+      - [Practice](#practice)
+      - [Directory structure](#directory-structure)
+    - [Annotating bad data](#annotating-bad-data)
+    - [Filtering](#filtering)
     - [Repairing artifacts with ICA](#repairing-artifacts-with-ica)
     - [Epoching and baseline correction](#epoching-and-baseline-correction)
     - [Create evoked responses](#create-evoked-responses)
     - [Compute baseline covariance](#compute-baseline-covariance)
-    - [FIXME: Time-frequency decomposition](#fixme-time-frequency-decomposition)
     - [Group averages on sensor level](#group-averages-on-sensor-level)
   - [Source level](#source-level)
     - [Coregistration](#coregistration)
@@ -37,10 +40,7 @@ If you have questions or want to start a discussion, please use the Disqus comme
 
 ## To-Do
 
-:white_large_square: Time-frequency decomposition  
 :white_large_square: Chinese translation  
-:white_large_square: More visualization  
-:white_large_square: Publication-ready graphs
 
 ## Readings
 
@@ -119,7 +119,7 @@ After making BEM surfaces, use them to create BEM models, BEM solutions and setu
 
 #### Real data
 
-If you are from NTU (National Taiwan University) like me, the data are assumed **Maxwell filtered** using SSS (or tSSS) with MaxFilter provided by Elekta.
+If you are from NTU (National Taiwan University) like me, the data are assumed **Maxwell filtered** using SSS (or tSSS) with MaxFilter provided by Elekta. If the cHPI recordings are available, MaxFilter can also perform movement compensation.
 
 #### Practice
 
@@ -136,19 +136,33 @@ The structure of your study directory should look like:
 ```
 .
 ├── MEG
+│   └── sample
 ├── MRI
+│   └── sample
 ├── results
 ├── scripts
-└── subjects
+├── subjects
+└── viz
 ```
 
-### Filter
+### Annotating bad data
+
+Before anything, take a look at the data to decide whether the data are worth processing. Also, annotate bad data segments to drop bad epochs afterward.
+
++ [Annotating continuous data](https://mne.tools/stable/auto_tutorials/raw/plot_30_annotate_raw.html)
++ [Rejecting bad data spans](https://mne.tools/stable/auto_tutorials/preprocessing/plot_20_rejecting_bad_data.html)
+
+#### Demo
+
+`3-1_annotate.py`
+
+### Filtering
 
 Most event-related brain signals are below 40 Hz. Low-pass filter with 40 Hz does not affect most brain signals of interest and attenuates the powerline frequency (60 Hz in Taiwan, 50 Hz in some countries) and all HPI coil frequencies (above 200 Hz). To use ICA to repair artifacts, data of EOG channels would be further high-pass filtered on 1Hz.
 
 #### Demo
 
-`3_filter.py`
+`3-2_filter.py`
 
 ### Repairing artifacts with ICA
 
@@ -163,7 +177,7 @@ ICA is a blind source separation technique that maximizes the statistical indepe
 
 ### Epoching and baseline correction
 
-Extract events using `mne.find_events` and create epochs based on the events. ECG and EOG events are also detected in this stage and excluded from the ICA to prevent the noise from spreading to all signals. It is common practice to use baseline correction so that any constant offsets in the baseline are removed.
+Extract events using `mne.find_events` and create epochs based on the events. Bad epochs according to the annotation file are dropped. ECG and EOG events are detected in this stage and excluded from the ICA to prevent the noise from spreading to all signals. It is common practice to use baseline correction so that any constant offsets in the baseline are removed.
 
 #### Demo
 
@@ -185,13 +199,6 @@ Here, the pre-stimulus period (baseline) is used.
 #### Demo
 
 `7_covariance.py`
-
-### FIXME: Time-frequency decomposition
-
-#### Demo
-
-+ `8_inspect_frequency.py`
-+ `9_time_frequency.py`
 
 ### Group averages on sensor level
 

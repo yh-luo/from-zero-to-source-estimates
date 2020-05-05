@@ -1,11 +1,8 @@
-import os
 import os.path as op
-
-import numpy as np
 
 # REVIEW: will os.getcwd() always work? No.
 # Please modify your study directory
-study_dir = os.getcwd()
+study_dir = '/home/yuhan/Project/from-zero-to-source-estimates/'
 subjects_dir = op.join(study_dir, "subjects")
 mri_dir = op.join(study_dir, "MRI")
 meg_dir = op.join(study_dir, "MEG")
