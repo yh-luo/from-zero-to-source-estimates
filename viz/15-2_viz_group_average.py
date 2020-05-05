@@ -1,14 +1,9 @@
 import os
-# os.chdir('../')
 import os.path as op
 
 import mne
 
 from scripts.config import baseline, meg_dir, subjects_dir
-
-# for vs code interactive terminal
-# get_ipython().run_line_magic('matplotlib', 'qt')
-# get_ipython().run_line_magic('gui', 'qt')
 
 evokeds = mne.read_evokeds(op.join(meg_dir, 'grand_average-ave.fif'))
 
