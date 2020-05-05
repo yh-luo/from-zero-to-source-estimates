@@ -1,7 +1,10 @@
 import os.path as op
+
 import mne
+
 from config import meg_dir
 
+# change the subject to use
 subject = 'sample'
 raw = mne.io.read_raw_fif(
     op.join(meg_dir, subject, f'{subject}_audvis_raw.fif'))
