@@ -48,6 +48,7 @@ def run_evoked(subject):
         evoked_al, evoked_ar, evoked_vl, evoked_vr, contrast_aud, contrast_vis,
         evoked_al_eq, evoked_ar_eq, evoked_vl_eq, evoked_vr_eq
     ])
+    print(f'Created Evoked for {subject}')
 
 
 parallel, run_func, _ = parallel_func(run_evoked, n_jobs=n_jobs)

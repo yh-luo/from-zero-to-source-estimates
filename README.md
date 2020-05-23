@@ -2,11 +2,20 @@
 
 If you have questions or want to start a discussion, please use the Disqus comment system below [the post](https://yuhan.netlify.com/posts/from-zero-to-source-estimates/). If you wish to contribute or correct the contents (more than welcome!), please open an issue or create a pull request.
 
+## Cautions
+
+Be aware that this is my learning journey. So the materials will change based on my knowledge of MEG and [`mne-python`](https://mne.tools/stable/index.html). If something looks wrong, it could be wrong so please let me know!
+
 ## Project overview
 
 + `scripts`: python scripts for processing
 + `viz`: python scripts and jupyter notebooks for visulization
 + `README.md`: instructions and some notes
+
+## Requirements
+
++ Python 3.6 or higher
++ mne-python 0.20 or higher
 
 ## Table of Contents
 
@@ -19,9 +28,6 @@ If you have questions or want to start a discussion, please use the Disqus comme
     - [Make BEMs and set up the source space](#make-bems-and-set-up-the-source-space)
   - [Preprocessing MEG data](#preprocessing-meg-data)
     - [Prerequisite](#prerequisite)
-      - [Real data](#real-data)
-      - [Practice](#practice)
-      - [Directory structure](#directory-structure)
     - [Annotating bad data](#annotating-bad-data)
     - [Filtering](#filtering)
     - [Repairing artifacts with ICA](#repairing-artifacts-with-ica)
@@ -166,10 +172,11 @@ Most event-related brain signals are below 40 Hz. Low-pass filter with 40 Hz doe
 
 ### Repairing artifacts with ICA
 
-ICA is a blind source separation technique that maximizes the statistical independence between the components. Because of its peaky distributions, eye blinks and heartbeats can be easily removed using ICA.
+ICA is a blind source separation technique that maximizes the statistical independence between the components. Because of its peaky distributions, eye blinks and heartbeats can be easily removed using ICA. Because ICA can be affected by high amplitude artifacts, [`autoreject`](https://autoreject.github.io/index.html) is used on the raw data to determine the rejection threshold before fitting ICA to the data.
 
 + [Overview of artifact detection](https://mne.tools/stable/auto_tutorials/preprocessing/plot_10_preprocessing_overview.html)
 + [Repairing artifacts with ICA](https://mne.tools/stable/auto_tutorials/preprocessing/plot_40_artifact_correction_ica.html)
++ [autoreject FAQ: Should I apply ICA first or autoreject first?](https://autoreject.github.io/faq.html#should-i-apply-ica-first-or-autoreject-first)
 
 #### Demo
 
@@ -177,7 +184,7 @@ ICA is a blind source separation technique that maximizes the statistical indepe
 
 ### Epoching and baseline correction
 
-Extract events using `mne.find_events` and create epochs based on the events. Bad epochs according to the annotation file are dropped. ECG and EOG events are detected in this stage and excluded from the ICA to prevent the noise from spreading to all signals. It is common practice to use baseline correction so that any constant offsets in the baseline are removed.
+Extract events using `mne.find_events` and create epochs based on the events. Bad epochs according to the annotation file are dropped. ECG and EOG events are detected in this stage and excluded from the ICA to prevent the noise from spreading to all signals. [CTPS method](http://ieeexplore.ieee.org/document/4536072/) is used to detect ECG related IC and the threshold is set to 0.21 (TBA). The maximum number of excluded IC is confined to 3 for ECG (QRS complex) and 2 for EOG (horizontal and vertical eye movements). When creating epochs, it is common practice to use baseline correction so that any constant offsets in the baseline are removed.
 
 #### Demo
 

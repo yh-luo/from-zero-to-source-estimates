@@ -12,6 +12,9 @@ def run_epochs(subject):
     raw_fname = op.join(meg_dir, subject, f'{subject}_audvis-filt_raw_sss.fif')
     annot_fname = op.join(meg_dir, subject, f'{subject}_audvis-annot.fif')
     raw = mne.io.read_raw_fif(raw_fname, preload=True, verbose='error')
+    ica_fname = op.join(meg_dir, subject, f'{subject}_audvis-ica.fif')
+    ica_outname = op.join(meg_dir, subject,
+                          f'{subject}_audvis-applied-ica.fif')
     annot = mne.read_annotations(annot_fname)
     raw.set_annotations(annot)
     # extract events
@@ -37,21 +40,16 @@ def run_epochs(subject):
                         verbose='error')
 
     # ICA
-    ica_fname = op.join(meg_dir, subject, f'{subject}_audvis-ica.fif')
-    ica_outname = op.join(meg_dir, subject,
-                          f'{subject}_audvis-applied-ica.fif')
     ica = mne.preprocessing.read_ica(ica_fname)
-    ica.exclude = []
     try:
         # ECG
         ecg_epochs = mne.preprocessing.create_ecg_epochs(raw,
-                                                         preload=False,
+                                                         baseline=(None, None),
+                                                         preload=True,
                                                          verbose='error')
-        ecg_epochs.load_data()
-        ecg_epochs.apply_baseline((None, None))
         ecg_inds, scores_ecg = ica.find_bads_ecg(ecg_epochs,
                                                  method='ctps',
-                                                 threshold=0.8,
+                                                 threshold=0.21,
                                                  verbose='error')
     except ValueError:
         pass
@@ -65,15 +63,14 @@ def run_epochs(subject):
             # for future inspection
             ecg_epochs.average().save(
                 op.join(meg_dir, subject, f'{subject}_audvis-ecg-ave.fif'))
-            del ecg_epochs, ecg_inds, scores_ecg  # release memory
+        del ecg_epochs, ecg_inds, scores_ecg  # release memory
 
     try:
         # EOG
         eog_epochs = mne.preprocessing.create_eog_epochs(raw,
-                                                         preload=False,
+                                                         baseline=(None, None),
+                                                         preload=True,
                                                          verbose='error')
-        eog_epochs.load_data()
-        eog_epochs.apply_baseline((None, None))
         eog_inds, scores_eog = ica.find_bads_eog(eog_epochs, verbose='error')
     except ValueError:
         pass
@@ -95,7 +92,8 @@ def run_epochs(subject):
     epochs.load_data()
     ica.apply(epochs)
 
-    reject = get_rejection_threshold(epochs.copy().crop(None, reject_tmax))
+    reject = get_rejection_threshold(epochs.copy().crop(None, reject_tmax),
+                                     ch_types=['mag', 'grad'])
     epochs.drop_bad(reject=reject, verbose='error')
     print(
         '\n',
