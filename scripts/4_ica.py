@@ -20,7 +20,6 @@ def run_ica(subject):
     # higher threshold would be reasonable.
     n_components = 0.999
     ica = mne.preprocessing.ICA(n_components=n_components)
-    # Only remove ECG artifacts for now
     picks = mne.pick_types(raw.info,
                            meg=True,
                            eeg=False,

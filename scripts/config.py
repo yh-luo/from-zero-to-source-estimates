@@ -1,14 +1,13 @@
 import os.path as op
 
-# REVIEW: will os.getcwd() always work? No.
-# Please modify your study directory
+# Please modify the study directory
 study_dir = '/home/yuhan/Project/from-zero-to-source-estimates/'
 subjects_dir = op.join(study_dir, "subjects")
 mri_dir = op.join(study_dir, "MRI")
 meg_dir = op.join(study_dir, "MEG")
 rst_dir = op.join(study_dir, 'results')
 
-l_freq = None
+l_freq = 1
 h_freq = 40
 
 # NOTE: https://mne.tools/stable/overview/cookbook.html#setting-up-the-source-space
@@ -23,7 +22,7 @@ n_jobs = 4
 
 # artifacts
 n_max_ecg = 3
-n_max_eog = 2
+n_max_eog = 3
 
 # epochs
 # We'll create some dummy names for each event type

@@ -56,10 +56,7 @@ def run_epochs(subject):
     else:
         print(f'Found {len(ecg_inds)} ECG indices for {subject}')
         if len(ecg_inds) != 0:
-            if len(ecg_inds) > n_max_ecg:
-                ica.exclude.extend(ecg_inds[:n_max_ecg])
-            else:
-                ica.exclude.extend(ecg_inds[:len(ecg_inds)])
+            ica.exclude.extend(ecg_inds[:n_max_ecg])
             # for future inspection
             ecg_epochs.average().save(
                 op.join(meg_dir, subject, f'{subject}_audvis-ecg-ave.fif'))
@@ -77,10 +74,7 @@ def run_epochs(subject):
     else:
         print(f'Found {len(eog_inds)} EOG indices for {subject}')
         if len(eog_inds) != 0:
-            if len(eog_inds) > n_max_eog:
-                ica.exclude.extend(eog_inds[:n_max_eog])
-            else:
-                ica.exclude.extend(eog_inds[:len(eog_inds)])
+            ica.exclude.extend(eog_inds[:n_max_eog])
             # for future inspection
             eog_epochs.average().save(
                 op.join(meg_dir, subject, f'{subject}_audvis-eog-ave.fif'))
@@ -92,8 +86,7 @@ def run_epochs(subject):
     epochs.load_data()
     ica.apply(epochs)
 
-    reject = get_rejection_threshold(epochs.copy().crop(None, reject_tmax),
-                                     ch_types=['mag', 'grad'])
+    reject = get_rejection_threshold(epochs, ch_types=['mag', 'grad'])
     epochs.drop_bad(reject=reject, verbose='error')
     print(
         '\n',
