@@ -44,6 +44,8 @@ def run_epochs(subject):
     try:
         # ECG
         ecg_epochs = mne.preprocessing.create_ecg_epochs(raw,
+                                                         l_freq=10,
+                                                         h_freq=20,
                                                          baseline=(None, None),
                                                          preload=True,
                                                          verbose='error')
@@ -54,7 +56,7 @@ def run_epochs(subject):
     except ValueError:
         pass
     else:
-        print(f'Found {len(ecg_inds)} ECG indices for {subject}')
+        print(f'Found {len(ecg_inds)} ({ecg_inds}) ECG indices for {subject}')
         if len(ecg_inds) != 0:
             ica.exclude.extend(ecg_inds[:n_max_ecg])
             # for future inspection
@@ -72,7 +74,7 @@ def run_epochs(subject):
     except ValueError:
         pass
     else:
-        print(f'Found {len(eog_inds)} EOG indices for {subject}')
+        print(f'Found {len(eog_inds)} ({eog_inds}) EOG indices for {subject}')
         if len(eog_inds) != 0:
             ica.exclude.extend(eog_inds[:n_max_eog])
             # for future inspection
@@ -86,6 +88,7 @@ def run_epochs(subject):
     epochs.load_data()
     ica.apply(epochs)
 
+    # local reject
     reject = get_rejection_threshold(epochs, ch_types=['mag', 'grad'])
     epochs.drop_bad(reject=reject, verbose='error')
     print(
