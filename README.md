@@ -4,12 +4,12 @@ If you have questions or want to start a discussion, please use the Disqus comme
 
 ## Cautions
 
-Be aware that this is my learning journey. So the materials will change based on my knowledge of MEG and [`mne-python`](https://mne.tools/stable/index.html). If something looks wrong, it could be wrong so please let me know!
+Be aware that this is my learning journey. The materials will change based on my knowledge of MEG and [`mne-python`](https://mne.tools/stable/index.html). If something looks wrong, it could be wrong. Please let me know if something looks confusing!
 
 ## Project overview
 
 + `scripts`: python scripts for processing
-+ `viz`: python scripts and jupyter notebooks for visulization
++ `viz`: python scripts and jupyter notebooks for visualization
 + `README.md`: instructions and some notes
 
 ## Requirements
@@ -38,7 +38,7 @@ Be aware that this is my learning journey. So the materials will change based on
   - [Source level](#source-level)
     - [Coregistration](#coregistration)
     - [Forward solution](#forward-solution)
-    - [Inverse soltuion](#inverse-soltuion)
+    - [Inverse solution](#inverse-solution)
     - [Morph data for group averages](#morph-data-for-group-averages)
     - [Group averages on source level](#group-averages-on-source-level)
     - [Compute statistics](#compute-statistics)
@@ -61,7 +61,7 @@ Be aware that this is my learning journey. So the materials will change based on
 
 ### DICOM to NifTi
 
-Usually, dicom files (e.g., xxxx.IMG from Siemens MRI scanners) are provided after MRI scans. Before running the FreeSurfer anatomic procedure, you need to convert the dicom files into NifTi format.  
+Usually, dicom files (e.g., xxxx.IMG from Siemens MRI scanners) are provided after MRI scans. Before running the FreeSurfer anatomic procedure, convert the dicom files into NifTi format.  
 Use any software you like. I used [dcm2niix](https://github.com/rordenlab/dcm2niix) included in [MRIcroGL](https://www.nitrc.org/projects/mricrogl/) at the moment (2020). For older dataset (e.g., data collected in 2016), I used [dcm2nii](https://people.cas.sc.edu/rorden/mricron/dcm2nii.html) in [MRICron 2MAY2016](https://www.nitrc.org/projects/mricron). Mysteriously, dcm2nii works fine on old data while dcm2niix adds additional bytes in the NifTi files and FreeSurfer is unable to process it sometimes.
 
 #### Notes
@@ -164,7 +164,7 @@ Before anything, take a look at the data to decide whether the data are worth pr
 
 ### Filtering
 
-Most event-related brain signals are below 40 Hz. Low-pass filter with 40 Hz does not affect most brain signals of interest and attenuates the powerline frequency (60 Hz in Taiwan, 50 Hz in some countries) and all HPI coil frequencies (above 200 Hz). To use ICA to repair artifacts, data of EOG channels would be further high-pass filtered on 1Hz.
+Most event-related brain signals are below 40 Hz. Low-pass filter with 40 Hz does not affect most brain signals of interest and attenuates the powerline frequency (60 Hz in Taiwan, 50 Hz in some countries) and all HPI coil frequencies (above 200 Hz). To use ICA to repair artifacts, data would be further high-pass filtered on 1Hz in order to remove slow drifts.
 
 #### Demo
 
@@ -184,7 +184,12 @@ ICA is a blind source separation technique that maximizes the statistical indepe
 
 ### Epoching and baseline correction
 
-Extract events using `mne.find_events` and create epochs based on the events. Bad epochs according to the annotation file are dropped. ECG and EOG events are detected in this stage and excluded from the ICA to prevent the noise from spreading to all signals. [CTPS method](http://ieeexplore.ieee.org/document/4536072/) is used to detect ECG related IC and the threshold is set to 0.21 (TBA). The maximum number of excluded IC is confined to 3 for ECG (QRS complex) and 2 for EOG (horizontal and vertical eye movements). When creating epochs, it is common practice to use baseline correction so that any constant offsets in the baseline are removed.
+Extract events using `mne.find_events` and create epochs based on the events. Bad epochs according to the annotation file are dropped. ECG and EOG events are detected in this stage and excluded from the ICA to prevent the noise from spreading to all signals. [CTPS method](http://ieeexplore.ieee.org/document/4536072/) is used to detect ECG related IC and the threshold is set to 0.21 (TBA). The maximum number of excluded IC is confined to 3 for ECG (QRS complex) and 3 for EOG. When creating epochs, it is common practice to use baseline correction so that any constant offsets in the baseline are removed.
+
+##### Note
+
++ Alternatively, inspect the ICs and manually remove the artifact-related ICs.
++ For ECG epochs, `l_freq=10` and `h_freq=20` give better results than the default (`l_freq=8`, `h_freq=16`).
 
 #### Demo
 
@@ -200,7 +205,7 @@ The epochs are averaged across conditions to create evoked responses for each su
 
 ### Compute baseline covariance
 
-Becauase inverse solvers usually assume Gaussian noise distribution, M/EEG signals require a whitening step due to the nature of being highly spatially correlated. To denoise the data, one must provide an estimate of the spatial noise covariance matrix. Empty-room recordings for MEG or pre-stimulus period can be used to compute such information.
+Because inverse solvers usually assume Gaussian noise distribution, M/EEG signals require a whitening step due to the nature of being highly spatially correlated. To denoise the data, one must provide an estimate of the spatial noise covariance matrix. Empty-room recordings for MEG or pre-stimulus period can be used to compute such information.
 Here, the pre-stimulus period (baseline) is used.
 
 #### Demo
@@ -242,7 +247,7 @@ Compute forward solution for the MEG data.
   + Use `sample_audvis_raw-trans.fif` from the sample dataset for practice, or create it manually.
 + `12_forward_solution.py`
 
-### Inverse soltuion
+### Inverse solution
 
 Compute and apply a dSPM inverse solution for each evoked data set.
 
@@ -270,7 +275,7 @@ After morphing, the source estimates are averaged for group responses on source 
 
 ### Compute statistics
 
-Test if the evoked reponses are significantly different between conditions across subjects. The multiple comparisons problem is addressed with a cluster-level permutation test across space and time. To demonstrate, the evoked responses elicited by left auditory stimuli and by left visual stimuli are compared. The cluster results are further visualized.
+Test if the evoked responses are significantly different between conditions across subjects. The multiple comparisons problem is addressed with a cluster-level permutation test across space and time. To demonstrate, the evoked responses elicited by left auditory stimuli and by left visual stimuli are compared. The cluster results are further visualized.
 
 #### Demo
 
