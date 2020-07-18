@@ -5,7 +5,7 @@ import mne
 import numpy as np
 from scipy import stats
 
-from config import (excludes, map_subjects, meg_dir, n_jobs, rst_dir,
+from config import (excludes, map_subjects, meg_dir, n_jobs, rst_dir, spacing,
                     subjects_dir)
 
 # prepare data
@@ -15,22 +15,26 @@ vis_l = list()
 subjects = [s for s in map_subjects.values() if s not in excludes]
 # For demonstration purpose, the data are simultated to create 7 subjects
 subjects = subjects * 7
+cond1 = 'aud_left_eq'
+cond2 = 'vis_left_eq'
 # NOTE: the simulation data takes approx. 10 G memory
 for subject in subjects:
     print(f'processing {subject}')
     # auditory
-    stc = mne.read_source_estimate(
-        op.join(
-            meg_dir, subject,
-            f'{subject}_audvis-dSPM_inverse_morph-filt-sss-aud_left_eq-stc'))
+    fname_1 = op.join(
+        meg_dir, subject,
+        f'{subject}_audvis-dSPM-{spacing}-inverse-morph-filt-sss-{cond1}-stc'
+    )
+    stc = mne.read_source_estimate(fname_1)
     # why `crop`: only deal with t > 0 to reduce multiple comparisons
     # why `T`: transpose to the correct shape
     aud_l.append(stc.magnitude().crop(0, None).data.T)
     # visual
-    stc = mne.read_source_estimate(
-        op.join(
-            meg_dir, subject,
-            f'{subject}_audvis-dSPM_inverse_morph-filt-sss-vis_left_eq-stc'))
+    fname_2 = op.join(
+        meg_dir, subject,
+        f'{subject}_audvis-dSPM-{spacing}-inverse-morph-filt-sss-{cond2}-stc'
+    )
+    stc = mne.read_source_estimate(fname_2)
     vis_l.append(stc.magnitude().crop(0, None).data.T)
 
 # Create contrast

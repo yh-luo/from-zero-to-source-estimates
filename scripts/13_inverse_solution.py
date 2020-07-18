@@ -37,16 +37,17 @@ def run_inverse(subject):
     mne.minimum_norm.write_inverse_operator(inv_fname, inverse_operator)
 
     for evoked in evokeds:
+        stc_fname = op.join(
+            meg_dir, subject,
+            f'{subject}_audvis-dSPM-{spacing}-inverse-filt-sss-{evoked.comment}'
+        )
         stc = mne.minimum_norm.apply_inverse(evoked,
                                              inverse_operator,
                                              lambda2,
                                              'dSPM',
                                              pick_ori='vector',
                                              verbose='error')
-        stc.save(
-            op.join(
-                meg_dir, subject,
-                f'{subject}_audvis-dSPM_inverse-filt-sss-{evoked.comment}'))
+        stc.save(stc_fname)
     print(f'Saved source estimates for {subject}')
 
 

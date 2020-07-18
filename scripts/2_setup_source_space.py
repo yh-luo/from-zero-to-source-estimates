@@ -17,17 +17,17 @@ def process_subject_source_space(subject):
                                overwrite=True)
 
     bem_surf_fname = op.join(subjects_dir, subject, "bem",
-                             f"{subject}-ico4-bem.fif")
+                             f"{subject}-{spacing}-bem.fif")
     bem_sol_fname = op.join(subjects_dir, subject, "bem",
-                            f"{subject}-ico4-bem-sol.fif")
+                            f"{subject}-{spacing}-bem-sol.fif")
     src_fname = op.join(subjects_dir, subject, "bem",
                         f"{subject}-{spacing}-src.fif")
 
     # make BEM models
-    # ico4 is for downsamping
+    # ico5 is for downsamping
     bem_surf = mne.make_bem_model(
         subject,
-        ico=4,  # 5120
+        ico=5,
         conductivity=[0.3],  # for MEG data, 1 layer model is enough
         subjects_dir=subjects_dir)
     mne.write_bem_surfaces(bem_surf_fname, bem_surf)
@@ -40,7 +40,7 @@ def process_subject_source_space(subject):
     mne.write_source_spaces(src_fname, src, overwrite=True)
 
 
-process_subject_source_space('subject_a')
+process_subject_source_space('sample')
 
 # Create source space for fsaverage
 # If you use precomputed reconstruction, you don't need to remove the symbolic
