@@ -11,7 +11,7 @@ import os.path as op
 import mne
 import numpy as np
 
-from scripts.config import meg_dir, rst_dir, subjects_dir
+from scripts.config import meg_dir, rst_dir, subjects_dir, spacing
 
 get_ipython().run_line_magic('matplotlib', 'qt')
 
@@ -29,7 +29,7 @@ fsaverage_vertices = [s['vertno'] for s in fsaverage_src]
 
 # get info
 info_data = mne.read_source_estimate(
-    op.join(meg_dir, 'sample', 'sample_audvis-dSPM_inverse_morph-filt-sss-aud_left_eq'))
+    op.join(meg_dir, 'sample', 'sample_audvis-dSPM-ico5-inverse-morph-filt-sss-aud_left_eq'))
 tstep = info_data.tstep
 
 # allow_pickle=True when you are certain that the data are not malicious!
@@ -51,12 +51,12 @@ stc_all_cluster_vis = mne.stats.summarize_clusters_stc(
 
 # it's unrealistic but beautiful ?!
 stc_all_cluster_vis.plot(hemi='rh', views='lat', time_label='temporal extent (ms)', size=(800, 800),
-    smoothing_steps=5, clim=dict(kind='value', pos_lims=[0, 1, 40]), backend='matplotlib')  # matplotlib backend is only for notebook demonstration, use PySurfer (backend='auto') for interactive plotting.
+    smoothing_steps=5, clim=dict(kind='value', pos_lims=[0, 1, 40]), backend='matplotlib')  # matplotlib backend is only for notebook demonstration, use PySurfer (backend='auto') for interactive plotting.)
 
 
 # In[4]:
 
 
 stc_all_cluster_vis.plot(hemi='lh', views='lat', time_label='temporal extent (ms)', size=(800, 800),
-    smoothing_steps=5, clim=dict(kind='value', pos_lims=[0, 1, 40]), backend='matplotlib')
+    smoothing_steps=5, clim=dict(kind='value', pos_lims=[0, 1, 40]),backend='matplotlib')  # matplotlib backend is only for notebook demonstration, use PySurfer (backend='auto') for interactive plotting.
 
