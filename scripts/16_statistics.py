@@ -8,9 +8,8 @@ from scipy import stats
 from config import (excludes, map_subjects, meg_dir, n_jobs, rst_dir, spacing,
                     subjects_dir)
 
-# prepare data
-aud_l = list()
-vis_l = list()
+# prepare data container
+contrasts = list()
 
 subjects = [s for s in map_subjects.values() if s not in excludes]
 # For demonstration purpose, the data are simultated to create 7 subjects
@@ -23,22 +22,24 @@ for subject in subjects:
     # auditory
     fname_1 = op.join(
         meg_dir, subject,
-        f'{subject}_audvis-dSPM-{spacing}-inverse-morph-filt-sss-{cond1}-stc'
-    )
-    stc = mne.read_source_estimate(fname_1)
+        f'{subject}_audvis-dSPM-{spacing}-inverse-morph-filt-sss-{cond1}-stc')
     # why `crop`: only deal with t > 0 to reduce multiple comparisons
     # why `T`: transpose to the correct shape
-    aud_l.append(stc.magnitude().crop(0, None).data.T)
+    stc_1 = mne.read_source_estimate(fname_1).magnitude().crop(0, None)
+
     # visual
     fname_2 = op.join(
         meg_dir, subject,
-        f'{subject}_audvis-dSPM-{spacing}-inverse-morph-filt-sss-{cond2}-stc'
-    )
-    stc = mne.read_source_estimate(fname_2)
-    vis_l.append(stc.magnitude().crop(0, None).data.T)
+        f'{subject}_audvis-dSPM-{spacing}-inverse-morph-filt-sss-{cond2}-stc')
+    stc_2 = mne.read_source_estimate(fname_2).magnitude().crop(0, None)
 
-# Create contrast
-contrast_X = np.array(aud_l, float) - np.array(vis_l, float)
+    stc_diff = stc_1 - stc_2
+    contrasts.append(stc_diff.data.T)
+
+# Get the right shape of difference data
+contrast_X = np.stack(contrasts, axis=0)
+# release memory
+del stc_1, stc_2, stc_diff, contrasts
 
 # prepare spatial connectivity
 fsaverage_src = mne.read_source_spaces(
