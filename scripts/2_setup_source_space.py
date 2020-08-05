@@ -4,30 +4,30 @@ import shutil
 
 import mne
 
-from config import spacing, subjects_dir
+from config import bem_ico, spacing, subjects_dir
 
 
 def process_subject_source_space(subject):
     # make BEMs using watershed bem
     # NOTE: Use MNE version >= 20 or set overwrite=True!
-    mne.bem.make_watershed_bem(subject,
-                               subjects_dir=subjects_dir,
-                               show=False,
-                               verbose=False,
-                               overwrite=True)
+    # mne.bem.make_watershed_bem(subject,
+    #                            subjects_dir=subjects_dir,
+    #                            show=False,
+    #                            verbose=False,
+    #                            overwrite=True)
 
     bem_surf_fname = op.join(subjects_dir, subject, "bem",
-                             f"{subject}-{spacing}-bem.fif")
+                             f"{subject}-ico{bem_ico}-bem.fif")
     bem_sol_fname = op.join(subjects_dir, subject, "bem",
-                            f"{subject}-{spacing}-bem-sol.fif")
+                            f"{subject}-ico{bem_ico}-bem-sol.fif")
     src_fname = op.join(subjects_dir, subject, "bem",
-                        f"{subject}-{spacing}-src.fif")
+                        f"{subject}-ico{bem_ico}-src.fif")
 
     # make BEM models
     # ico5 is for downsamping
     bem_surf = mne.make_bem_model(
         subject,
-        ico=5,
+        ico=bem_ico,
         conductivity=[0.3],  # for MEG data, 1 layer model is enough
         subjects_dir=subjects_dir)
     mne.write_bem_surfaces(bem_surf_fname, bem_surf)
@@ -59,6 +59,8 @@ fsaverage_bem = op.join(fsaverage_dst_dir, 'bem')
 if not op.isdir(fsaverage_bem):
     os.mkdir(fsaverage_bem)
 
-fsaverage_src = op.join(fsaverage_bem, 'fsaverage-5-src.fif')
-src = mne.setup_source_space('fsaverage', 'ico5', subjects_dir=subjects_dir)
+fsaverage_src = op.join(fsaverage_bem, f'fsaverage-ico{bem_ico}-src.fif')
+src = mne.setup_source_space('fsaverage',
+                             f'ico{bem_ico}',
+                             subjects_dir=subjects_dir)
 mne.write_source_spaces(fsaverage_src, src)

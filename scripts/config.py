@@ -11,7 +11,8 @@ l_freq = 1
 h_freq = 40
 
 # NOTE: https://mne.tools/stable/overview/cookbook.html#setting-up-the-source-space
-spacing = "ico5"
+spacing = "oct6"
+bem_ico = 5
 
 # Subject mapping
 map_subjects = {"subject_a": "subject_a", "sample": "sample"}
