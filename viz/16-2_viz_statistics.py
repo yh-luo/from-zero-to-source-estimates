@@ -11,7 +11,7 @@ import os.path as op
 import mne
 import numpy as np
 
-from scripts.config import meg_dir, rst_dir, subjects_dir, spacing
+from scripts.config import meg_dir, rst_dir, subjects_dir, spacing, bem_ico
 
 get_ipython().run_line_magic('matplotlib', 'qt')
 
@@ -24,7 +24,7 @@ clu_fname = op.join(rst_dir, 'left_auditory_vs_visual_0_to_None.npz')
 
 # prepare spatial connectivity
 fsaverage_src = mne.read_source_spaces(
-    op.join(subjects_dir, 'fsaverage', 'bem', 'fsaverage-5-src.fif'))
+    op.join(subjects_dir, 'fsaverage', 'bem', f'fsaverage-ico{bem_ico}-src.fif'))
 fsaverage_vertices = [s['vertno'] for s in fsaverage_src]
 
 # get info
@@ -39,24 +39,31 @@ clu = (cluster_result['t_obs'], cluster_result['clusters'],
 good_cluster_inds = np.where(cluster_result['cluster_pv'] < 0.05)
 
 os.environ["SUBJECTS_DIR"] = subjects_dir
-stc_all_cluster_vis = mne.stats.summarize_clusters_stc(
-    clu,
-    tstep=tstep,
-    vertices=fsaverage_vertices,
-    subject='fsaverage')
 
 
 # In[3]:
 
 
-# it's unrealistic but beautiful ?!
-stc_all_cluster_vis.plot(hemi='rh', views='lat', time_label='temporal extent (ms)', size=(800, 800),
-    smoothing_steps=5, clim=dict(kind='value', pos_lims=[0, 1, 40]), backend='matplotlib')  # matplotlib backend is only for notebook demonstration, use PySurfer (backend='auto') for interactive plotting.)
+stc_all_cluster_vis = mne.stats.summarize_clusters_stc(
+    clu,
+    tstep=tstep * 1000,
+    vertices=fsaverage_vertices,
+    subject='fsaverage')
 
+
+# Becuase the difference was calculated as `difference = auditory - visual`, red blobs represent areas auditory > visual and blue blobs represent visual > auditory.
 
 # In[4]:
 
 
+# it's unrealistic but beautiful ?!
+stc_all_cluster_vis.plot(hemi='lh', views='med', time_label='temporal extent (ms)', size=(800, 800),
+    smoothing_steps=5, clim=dict(kind='value', pos_lims=[0, 100, 200]), backend='matplotlib')  # matplotlib backend is only for notebook demonstration, use PySurfer (backend='auto') for interactive plotting.)
+
+
+# In[5]:
+
+
 stc_all_cluster_vis.plot(hemi='lh', views='lat', time_label='temporal extent (ms)', size=(800, 800),
-    smoothing_steps=5, clim=dict(kind='value', pos_lims=[0, 1, 40]),backend='matplotlib')  # matplotlib backend is only for notebook demonstration, use PySurfer (backend='auto') for interactive plotting.
+    smoothing_steps=5, clim=dict(kind='value', pos_lims=[0, 100, 200]),backend='matplotlib')  # matplotlib backend is only for notebook demonstration, use PySurfer (backend='auto') for interactive plotting.
 
