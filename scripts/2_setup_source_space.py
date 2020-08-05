@@ -4,7 +4,7 @@ import shutil
 
 import mne
 
-from config import bem_ico, spacing, subjects_dir
+from config import bem_ico, spacing, subjects_dir, n_jobs
 
 
 def process_subject_source_space(subject):
@@ -62,5 +62,6 @@ if not op.isdir(fsaverage_bem):
 fsaverage_src = op.join(fsaverage_bem, f'fsaverage-ico{bem_ico}-src.fif')
 src = mne.setup_source_space('fsaverage',
                              f'ico{bem_ico}',
-                             subjects_dir=subjects_dir)
+                             subjects_dir=subjects_dir,
+                             n_jobs=n_jobs)
 mne.write_source_spaces(fsaverage_src, src)
