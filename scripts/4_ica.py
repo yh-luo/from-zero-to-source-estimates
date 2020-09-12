@@ -23,19 +23,17 @@ def run_ica(subject):
     picks = mne.pick_types(raw.info,
                            meg=True,
                            eeg=False,
-                           eog=False,
-                           stim=False,
-                           exclude='bads')
+                           eog=True,
+                           ecg=True,
+                           stim=False)
     # use autoreject to find the rejection threshold to get better ICA results
-    tstep = 1.0
+    tstep = 1
     events = mne.make_fixed_length_events(raw, duration=tstep)
-    even_epochs = mne.Epochs(raw,
-                             events,
-                             baseline=(0, 0),
-                             tmin=0.0,
-                             tmax=tstep,
-                             reject_by_annotation=True)
-    reject = get_rejection_threshold(even_epochs, ch_types=['mag', 'grad'])
+    # do not use baseline correction because autoreject (global) would be used
+    even_epochs = mne.Epochs(raw, events, baseline=None, tmin=0, tmax=tstep)
+    reject = get_rejection_threshold(even_epochs,
+                                     ch_types=['mag', 'grad'],
+                                     verbose=False)
     ica.fit(raw, picks=picks, reject=reject, tstep=tstep)
     ica.save(ica_name)
     print(f'Finished computing ICA for {subject}')

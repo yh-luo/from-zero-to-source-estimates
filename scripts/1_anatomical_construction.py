@@ -5,14 +5,14 @@ from config import map_subjects, mri_dir, subjects_dir
 
 
 def run_command(command, log_file):
-    with open(log_file, "wb") as f:
+    with open(log_file, 'wb') as f:
         proc = subprocess.Popen(command,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT)
         for line in proc.stdout:
             f.write(line)
     if proc.wait() != 0:
-        raise RuntimeError("command failed")
+        raise RuntimeError('command failed')
 
 
 def process_subject_anat(subject_id, force=False):
@@ -20,22 +20,22 @@ def process_subject_anat(subject_id, force=False):
     subject = map_subjects[subject_id]
 
     if op.isdir(op.join(subjects_dir, subject)) and not force:
-        print(f"Skipping reconstruction for {subject_id} (folder exist)")
+        print(f'Skipping reconstruction for {subject_id} (folder exist)')
     else:
         # Run recon-all
-        print(f"Reconstructing {subject_id} (usually take hours)")
+        print(f'Reconstructing {subject_id} (usually take hours)')
         run_command(
             [
-                "recon-all",
-                "-all",
-                "-s",
+                'recon-all',
+                '-all',
+                '-s',
                 subject,
-                "-sd",
+                '-sd',
                 subjects_dir,
-                "-i",
-                op.join(subject_mri_dir, f"{subject_id}.nii.gz"),
+                '-i',
+                op.join(subject_mri_dir, f'{subject_id}.nii.gz'),
             ],
-            op.join(subject_mri_dir, f"{subject_id}_recon-all.txt"),
+            op.join(subject_mri_dir, f'{subject_id}_recon-all.txt'),
         )
 
 

@@ -4,14 +4,14 @@ import mne
 from mne.parallel import parallel_func
 
 from config import (excludes, map_subjects, meg_dir, n_jobs, spacing,
-                    subjects_dir)
+                    subjects_dir, bem_ico)
 
 
 def run_forward(subject):
     evoked_fname = op.join(meg_dir, subject,
                            f'{subject}_audvis-filt-sss-ave.fif')
     fwd_fname = op.join(meg_dir, subject,
-                        f'{subject}_audvis-{spacing}-fwd.fif')
+                        f'{subject}_audvis-{spacing}-ico{bem_ico}-fwd.fif')
     # If coregistration was done manually, change it to the file name
     # If use the provided trans file from sample dataset, remember to put the
     # trans file in MEG/
@@ -21,7 +21,7 @@ def run_forward(subject):
     src_fname = op.join(subjects_dir, subject, 'bem',
                         f'{subject}-{spacing}-src.fif')
     bem_fname = op.join(subjects_dir, subject, 'bem',
-                        f'{subject}-{spacing}-bem-sol.fif')
+                        f'{subject}-ico{bem_ico}-bem-sol.fif')
 
     # If you are practicing with the sample dataset
     # src_fname = op.join(subjects_dir, subject, 'bem',
@@ -35,8 +35,7 @@ def run_forward(subject):
                                     src_fname,
                                     bem_fname,
                                     meg=True,
-                                    eeg=False,
-                                    verbose='error')
+                                    eeg=False)
     mne.write_forward_solution(fwd_fname, fwd, overwrite=True)
     print(f'Computed forward solution for {subject}')
 

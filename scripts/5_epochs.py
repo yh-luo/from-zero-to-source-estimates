@@ -1,43 +1,28 @@
 import os.path as op
 
 import mne
-from autoreject import get_rejection_threshold
-from mne.parallel import parallel_func
+from autoreject import AutoReject
 
-from config import (baseline, event_id, excludes, map_subjects, meg_dir,
-                    n_jobs, n_max_ecg, n_max_eog, reject_tmax, tmax, tmin)
+from config import (baseline, event_id, excludes, map_subjects,
+                    meg_dir, n_jobs, n_max_ecg, n_max_eog, reject_tmax, tmax,
+                    tmin)
 
 
-def run_epochs(subject):
+def run_epochs(subject, autoreject=True):
     raw_fname = op.join(meg_dir, subject, f'{subject}_audvis-filt_raw_sss.fif')
     annot_fname = op.join(meg_dir, subject, f'{subject}_audvis-annot.fif')
-    raw = mne.io.read_raw_fif(raw_fname, preload=True, verbose='error')
-    ica_fname = op.join(meg_dir, subject, f'{subject}_audvis-ica.fif')
-    ica_outname = op.join(meg_dir, subject,
-                          f'{subject}_audvis-applied-ica.fif')
+    raw = mne.io.read_raw_fif(raw_fname, preload=False)
     annot = mne.read_annotations(annot_fname)
     raw.set_annotations(annot)
-    # extract events
-    # modify stim_channel for your need
-    events = mne.find_events(raw, stim_channel="STI 014", verbose='error')
-
-    picks = mne.pick_types(raw.info,
-                           meg=True,
-                           eog=True,
-                           ecg=True,
-                           stim=False,
-                           exclude=['bads'])
-    epochs = mne.Epochs(raw,
-                        events=events,
-                        picks=picks,
-                        event_id=event_id,
-                        tmin=tmin,
-                        tmax=tmax,
-                        baseline=baseline,
-                        preload=False,
-                        reject_tmax=reject_tmax,
-                        reject_by_annotation=True,
-                        verbose='error')
+    if autoreject:
+        epo_fname = op.join(meg_dir, subject,
+                            f'{subject}_audvis-filt-sss-ar-epo.fif')
+    else:
+        epo_fname = op.join(meg_dir, subject,
+                            f'{subject}_audvis-filt-sss-epo.fif')
+    # ICA
+    ica_fname = op.join(meg_dir, subject, f'{subject}_audvis-ica.fif')
+    ica = mne.preprocessing.read_ica(ica_fname)
 
     # ICA
     ica = mne.preprocessing.read_ica(ica_fname)
@@ -47,13 +32,12 @@ def run_epochs(subject):
                                                          l_freq=10,
                                                          h_freq=20,
                                                          baseline=(None, None),
-                                                         preload=True,
-                                                         verbose='error')
+                                                         preload=True)
         ecg_inds, scores_ecg = ica.find_bads_ecg(ecg_epochs,
                                                  method='ctps',
-                                                 threshold=0.21,
-                                                 verbose='error')
+                                                 threshold=0.21)
     except ValueError:
+        # not found
         pass
     else:
         print(f'Found {len(ecg_inds)} ({ecg_inds}) ECG indices for {subject}')
@@ -62,16 +46,17 @@ def run_epochs(subject):
             # for future inspection
             ecg_epochs.average().save(
                 op.join(meg_dir, subject, f'{subject}_audvis-ecg-ave.fif'))
-        del ecg_epochs, ecg_inds, scores_ecg  # release memory
+        # release memory
+        del ecg_epochs, ecg_inds, scores_ecg
 
     try:
         # EOG
         eog_epochs = mne.preprocessing.create_eog_epochs(raw,
                                                          baseline=(None, None),
-                                                         preload=True,
-                                                         verbose='error')
-        eog_inds, scores_eog = ica.find_bads_eog(eog_epochs, verbose='error')
+                                                         preload=True)
+        eog_inds, scores_eog = ica.find_bads_eog(eog_epochs)
     except ValueError:
+        # not found
         pass
     else:
         print(f'Found {len(eog_inds)} ({eog_inds}) EOG indices for {subject}')
@@ -82,26 +67,43 @@ def run_epochs(subject):
                 op.join(meg_dir, subject, f'{subject}_audvis-eog-ave.fif'))
             del eog_epochs, eog_inds, scores_eog  # release memory
 
-    del raw  # to release memory
+    # applying ICA on Raw
+    raw.load_data()
+    ica.apply(raw)
 
-    ica.save(ica_outname)
-    epochs.load_data()
-    ica.apply(epochs)
+    # extract events for epoching
+    # modify stim_channel for your need
+    events = mne.find_events(raw, stim_channel="STI 014")
+    picks = mne.pick_types(raw.info, meg=True)
+    epochs = mne.Epochs(
+        raw,
+        events=events,
+        picks=picks,
+        event_id=event_id,
+        tmin=tmin,
+        tmax=tmax,
+        baseline=baseline,
+        preload=True,  # for autoreject
+        reject_tmax=reject_tmax,
+        reject_by_annotation=True)
+    del raw, annot
 
-    # local reject
-    reject = get_rejection_threshold(epochs, ch_types=['mag', 'grad'])
-    epochs.drop_bad(reject=reject, verbose='error')
-    print(
-        '\n',
-        f"Dropped {subject}'s {round(epochs.drop_log_stats(), 1)}% of epochs",
-        '\n')
-    epochs.save(op.join(meg_dir, subject,
-                        f'{subject}_audvis-filt-sss-epo.fif'),
-                overwrite=True)
+    # autoreject (local)
+    if autoreject:
+        # local reject
+        # keep the bad sensors/channels because autoreject can repair it via
+        # interpolation
+        picks = mne.pick_types(epochs.info, meg=True, exclude=[])
+        ar = AutoReject(picks=picks, n_jobs=n_jobs, verbose=False)
+        print(f'Run autoreject (local) for {subject}')
+        ar.fit(epochs)
+        print(f'Drop bad epochs and interpolate bad sensors for {subject}')
+        epochs = ar.transform(epochs)
+
+    print(f'Dropped {round(epochs.drop_log_stats(), 2)}% epochs for {subject}')
+    epochs.save(epo_fname, overwrite=True)
 
 
-parallel, run_func, _ = parallel_func(run_epochs, n_jobs=n_jobs)
-subjects = [
-    subject for subject in map_subjects.values() if subject not in excludes
-]
-parallel(run_func(subject) for subject in subjects)
+for subject in map_subjects.values():
+    if subject not in excludes:
+        run_epochs(subject)

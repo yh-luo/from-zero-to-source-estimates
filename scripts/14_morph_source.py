@@ -3,11 +3,11 @@ import os.path as op
 import mne
 from mne.parallel import parallel_func
 
-from config import (excludes, map_subjects, meg_dir, n_jobs, smooth, spacing,
+from config import (excludes, map_subjects, meg_dir, n_jobs, spacing,
                     subjects_dir)
 
 src = mne.read_source_spaces(
-    op.join(subjects_dir, 'fsaverage', 'bem', 'fsaverage-5-src.fif'))
+    op.join(subjects_dir, 'fsaverage', 'bem', f'fsaverage-{spacing}-src.fif'))
 fsave_vertices = [s['vertno'] for s in src]
 
 
@@ -18,20 +18,20 @@ def morph_stc(subject):
     ]:
         stc = mne.read_source_estimate(
             op.join(
-                meg_dir, subject,
-                f'{subject}_audvis-dSPM-{spacing}-inverse-filt-sss-{condition}'
-            ))
+                meg_dir, subject, '-'.join([
+                    f'{subject}_audvis', 'dSPM', spacing, 'inverse', 'filt',
+                    'sss', condition
+                ])))
         morphed_fname = op.join(
-            meg_dir, subject,
-            f'{subject}_audvis-dSPM-{spacing}-inverse-morph-filt-sss-{condition}'
-        )
+            meg_dir, subject, '-'.join([
+                f'{subject}_audvis', 'dSPM', spacing, 'inverse', 'morph',
+                'filt', 'sss', condition
+            ]))
         morphed = mne.compute_source_morph(stc,
                                            subject_from=subject,
                                            subject_to='fsaverage',
                                            subjects_dir=subjects_dir,
-                                           spacing=fsave_vertices,
-                                           smooth=smooth,
-                                           verbose='error').apply(stc)
+                                           spacing=fsave_vertices).apply(stc)
         morphed.save(morphed_fname)
     print(f'Saved morphed source estimates for {subject}')
 
