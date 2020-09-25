@@ -29,7 +29,11 @@ def run_inverse(subject):
     cov = mne.read_cov(cov_fname)
     fwd = mne.read_forward_solution(fwd_fname)
     info = evokeds[0].info
-    inverse_operator = mne.minimum_norm.make_inverse_operator(info, fwd, cov)
+    # set rank to 'info' because the data were Maxwell-filtered
+    inverse_operator = mne.minimum_norm.make_inverse_operator(info,
+                                                              fwd,
+                                                              cov,
+                                                              rank='info')
     mne.minimum_norm.write_inverse_operator(inv_fname, inverse_operator)
 
     for evoked in evokeds:
@@ -40,8 +44,7 @@ def run_inverse(subject):
             ]))
         stc = mne.minimum_norm.apply_inverse(evoked,
                                              inverse_operator,
-                                             lambda2,
-                                             'dSPM',
+                                             method='dSPM',
                                              pick_ori='vector')
         stc.save(stc_fname)
     print(f'Saved source estimates for {subject}')

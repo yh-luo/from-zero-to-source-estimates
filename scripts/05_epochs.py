@@ -95,7 +95,7 @@ def run_epochs(subject, autoreject=True):
         # interpolation
         picks = mne.pick_types(epochs.info, meg=True, exclude=[])
         ar = AutoReject(picks=picks, n_jobs=n_jobs, verbose=False)
-        print(f'Run autoreject (local) for {subject}')
+        print(f'Run autoreject (local) for {subject} (it takes a long time)')
         ar.fit(epochs)
         print(f'Drop bad epochs and interpolate bad sensors for {subject}')
         epochs = ar.transform(epochs)

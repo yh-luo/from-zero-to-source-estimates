@@ -5,8 +5,6 @@ results/
 subjects/
 ct_sparse_mgh.fif
 sss_cal_mgh.dat
-# personal scripts
-myscripts/
 
 # editor
 .vscode/
