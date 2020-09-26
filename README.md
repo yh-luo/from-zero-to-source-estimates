@@ -15,7 +15,7 @@ Be aware that this is my learning journey. The materials will change based on my
 ## Requirements
 
 + Python 3.6 or higher
-+ mne-python 0.20 or higher
++ mne-python 0.21 or higher
 
 ## Table of Contents
 
@@ -88,7 +88,7 @@ If the reconstruction looks incorrect, you may need to adjust the results or the
   + dicom files from [High frequency SEF dataset](https://mne.tools/stable/overview/datasets_index.html?highlight=dicom#high-frequency-sef)
   + subject_a.nii.gz or subject_b.nii.gz (manually converted to compressed NifTi from dicom files of T1)
 + `0_fetch_dataset.py` to get dataset
-+ `1_anatomical_construction.py`
++ `01_anatomical_construction.py`
 
 #### Notes
 
@@ -108,6 +108,8 @@ There are two ways to create BEM surfaces:
 
 After making BEM surfaces, use them to create BEM models, BEM solutions and setup the source space.
 
+Usually, ico4 (2562 sources per hemisphere) is precise enough and efficient for source reconstruction. But ico5 (10242 sources per hemisphere) can be used for extra precision. This demo uses ico4 (`bem_ico = 4` in `config.py`).
+
 #### Notes
 
 + MNE version < 20 has a bug that makes it impossible to create watershed BEMs when `overwrite=False`.
@@ -116,8 +118,8 @@ After making BEM surfaces, use them to create BEM models, BEM solutions and setu
 #### Demo
 
 + Data
-  + FreeSurfer reconstruction of subject_a or subject_b
-+ `2_setup_source_space.py`
+  + FreeSurfer reconstruction of sample
++ `02_setup_source_space.py`
 
 ## Preprocessing MEG data
 
@@ -160,40 +162,47 @@ Before anything, take a look at the data to decide whether the data are worth pr
 
 #### Demo
 
-`3-1_annotate.py`
+`03-1_annotate.py`
 
 ### Filtering
 
-Most event-related brain signals are below 40 Hz. Low-pass filter with 40 Hz does not affect most brain signals of interest and attenuates the powerline frequency (60 Hz in Taiwan, 50 Hz in some countries) and all HPI coil frequencies (above 200 Hz). To use ICA to repair artifacts, data would be further high-pass filtered on 1Hz in order to remove slow drifts.
+Most event-related brain signals are below 40 Hz. Low-pass filter with 40 Hz does not affect most brain signals of interest and attenuates the powerline frequency (60 Hz in Taiwan, 50 Hz in some countries) and all HPI coil frequencies (above 100 Hz). To use ICA to repair artifacts, data of EOG channels would be further high-pass filtered on 1Hz in order to remove slow drifts.
 
 #### Demo
 
-`3-2_filter.py`
+`03-2_filter.py`
 
 ### Repairing artifacts with ICA
 
-ICA is a blind source separation technique that maximizes the statistical independence between the components. Because of its peaky distributions, eye blinks and heartbeats can be easily removed using ICA. Because ICA can be affected by high amplitude artifacts, [`autoreject`](https://autoreject.github.io/index.html) is used on the raw data to determine the rejection threshold before fitting ICA to the data.
+ICA is a blind source separation technique that maximizes the statistical independence between the components. Because of its peaky distributions, eye blinks and heartbeats can be easily removed using ICA. Because ICA can be affected by high amplitude artifacts, `autoreject (global)` is used on the raw data to determine the rejection threshold before fitting ICA to the data.
 
 + [Overview of artifact detection](https://mne.tools/stable/auto_tutorials/preprocessing/plot_10_preprocessing_overview.html)
 + [Repairing artifacts with ICA](https://mne.tools/stable/auto_tutorials/preprocessing/plot_40_artifact_correction_ica.html)
++ Jas, M., Engemann, D. A., Bekhti, Y., Raimondo, F., & Gramfort, A. (2017). Autoreject: Automated artifact rejection for MEG and EEG data. NeuroImage, 159, 417–429. https://doi.org/10.1016/j.neuroimage.2017.06.030
 + [autoreject FAQ: Should I apply ICA first or autoreject first?](https://autoreject.github.io/faq.html#should-i-apply-ica-first-or-autoreject-first)
 
 #### Demo
 
-`4_ica.py`
++ `04_ica.py`
++ `04-2_viz_ica.py`
 
 ### Epoching and baseline correction
 
-Extract events using `mne.find_events` and create epochs based on the events. Bad epochs according to the annotation file are dropped. ECG and EOG events are detected in this stage and excluded from the ICA to prevent the noise from spreading to all signals. [CTPS method](http://ieeexplore.ieee.org/document/4536072/) is used to detect ECG related IC and the threshold is set to 0.21 (TBA). The maximum number of excluded IC is confined to 3 for ECG (QRS complex) and 3 for EOG. When creating epochs, it is common practice to use baseline correction so that any constant offsets in the baseline are removed.
+Extract events using `mne.find_events` and create epochs based on the events. Bad epochs according to the annotation file are dropped. ECG and EOG events are detected in this stage and excluded from the ICA to prevent the noise from spreading to all signals. [CTPS method](http://ieeexplore.ieee.org/document/4536072/) is used to detect ECG related IC and the threshold is set to automatic computation (implemented in mne v0.21). The maximum number of excluded IC is confined to 3 for ECG (QRS complex) and 3 for EOG. When creating epochs, it is common practice to use baseline correction so that any constant offsets in the baseline are removed. After creating the epochs, `autoreject (local)` is used to drop bad epochs and interpolate bad channels. Notice that running `autoreject` is not required but recommended to denoise the data. Refer to the paper when in doubt.
+
++ Dammers, J., Schiek, M., Boers, F., Silex, C., Zvyagintsev, M., Pietrzyk, U., & Mathiak, K. (2008). Integration of Amplitude and Phase Statistics for Complete Artifact Removal in Independent Components of Neuromagnetic Recordings. IEEE Transactions on Biomedical Engineering, 55(10), 2353–2362. https://doi.org/10.1109/TBME.2008.926677
++ Jas, M., Engemann, D. A., Bekhti, Y., Raimondo, F., & Gramfort, A. (2017). Autoreject: Automated artifact rejection for MEG and EEG data. NeuroImage, 159, 417–429. https://doi.org/10.1016/j.neuroimage.2017.06.030
 
 ##### Note
 
 + Alternatively, inspect the ICs and manually remove the artifact-related ICs.
 + For ECG epochs, `l_freq=10` and `h_freq=20` give better results than the default (`l_freq=8`, `h_freq=16`).
++ `autoreject (local)` utilizes machine learning techniques to clean the signals and can be resource-consuming.
 
 #### Demo
 
-`5_epochs.py`
++ `05_epochs.py`
++ `05-2_viz_artifact_epochs.py`
 
 ### Create evoked responses
 
@@ -201,7 +210,7 @@ The epochs are averaged across conditions to create evoked responses for each su
 
 #### Demo
 
-`6_evoked.py`
+`06_evoked.py`
 
 ### Compute baseline covariance
 
@@ -210,7 +219,7 @@ Here, the pre-stimulus period (baseline) is used.
 
 #### Demo
 
-`7_covariance.py`
+`07_covariance.py`
 
 ### Group averages on sensor level
 
@@ -275,7 +284,8 @@ After morphing, the source estimates are averaged for group responses on source 
 
 ### Compute statistics
 
-Test if the evoked responses are significantly different between conditions across subjects. The multiple comparisons problem is addressed with a cluster-level permutation test across space and time. To demonstrate, the evoked responses elicited by left auditory stimuli and by left visual stimuli are compared. The cluster results are further visualized.
+Test if the evoked responses are significantly different between conditions across subjects. The multiple comparisons problem is addressed with a cluster-level permutation test across space and time. In this demo, the evoked responses elicited by left auditory stimuli and by left visual stimuli are compared. 
+The cluster results are saved to HDF (*.h5) for future use (e.g., visualization). The cluster results are further visualized via `mne.stats.summarize_clusters_stc`.
 
 #### Demo
 
@@ -288,4 +298,4 @@ Test if the evoked responses are significantly different between conditions acro
 
 ## Write reports
 
-Congratulations and goodbye! You are on your own now :)
+Congratulations and good luck!
