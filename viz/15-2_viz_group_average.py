@@ -29,7 +29,7 @@ mapping = {
     'vis_left': evokeds[2],
     'vis_right': evokeds[3]
 }
-# to show it
+# to show it properly in notebook...
 get_ipython().run_line_magic('matplotlib', 'inline')
 mne.viz.plot_compare_evokeds(mapping)
 get_ipython().run_line_magic('matplotlib', 'qt')

@@ -4,7 +4,7 @@ import shutil
 
 import mne
 
-from config import bem_ico, spacing, subjects_dir, n_jobs
+from config import bem_ico, n_jobs, spacing, subjects_dir
 
 
 def process_subject_source_space(subject):
@@ -16,12 +16,12 @@ def process_subject_source_space(subject):
     #                            verbose=False,
     #                            overwrite=True)
 
-    bem_surf_fname = op.join(subjects_dir, subject, "bem",
-                             f"{subject}-ico{bem_ico}-bem.fif")
-    bem_sol_fname = op.join(subjects_dir, subject, "bem",
-                            f"{subject}-ico{bem_ico}-bem-sol.fif")
-    src_fname = op.join(subjects_dir, subject, "bem",
-                        f"{subject}-ico{bem_ico}-src.fif")
+    bem_surf_fname = op.join(subjects_dir, subject, 'bem',
+                             f'{subject}-ico{bem_ico}-bem.fif')
+    bem_sol_fname = op.join(subjects_dir, subject, 'bem',
+                            f'{subject}-ico{bem_ico}-bem-sol.fif')
+    src_fname = op.join(subjects_dir, subject, 'bem',
+                        f'{subject}-ico{bem_ico}-src.fif')
 
     # make BEM models
     # ico5 is for downsamping
@@ -43,25 +43,23 @@ def process_subject_source_space(subject):
 process_subject_source_space('sample')
 
 # Create source space for fsaverage
-# If you use precomputed reconstruction, you don't need to remove the symbolic
-# link of fsaverage.
-precomputed = True
-
 fsaverage_src_dir = op.join(os.environ['FREESURFER_HOME'], 'subjects',
                             'fsaverage')
 fsaverage_dst_dir = op.join(subjects_dir, 'fsaverage')
 
-if not precomputed:
+if not op.isdir(fsaverage_dst_dir):
     os.unlink(fsaverage_dst_dir)  # remove symlink
-shutil.copytree(fsaverage_src_dir, fsaverage_dst_dir)
+    shutil.copytree(fsaverage_src_dir, fsaverage_dst_dir)
 
 fsaverage_bem = op.join(fsaverage_dst_dir, 'bem')
 if not op.isdir(fsaverage_bem):
     os.mkdir(fsaverage_bem)
 
-fsaverage_src = op.join(fsaverage_bem, f'fsaverage-ico{bem_ico}-src.fif')
-src = mne.setup_source_space('fsaverage',
-                             f'ico{bem_ico}',
-                             subjects_dir=subjects_dir,
-                             n_jobs=n_jobs)
-mne.write_source_spaces(fsaverage_src, src)
+fsaverage_src = op.join(fsaverage_bem, f'fsaverage-{spacing}-src.fif')
+if not op.isfile(fsaverage_src):
+    src = mne.setup_source_space('fsaverage',
+                                 spacing,
+                                 subjects_dir=subjects_dir,
+                                 n_jobs=n_jobs)
+    mne.write_source_spaces(fsaverage_src, src)
+    print(f'Created {spacing} source space for fsaverage')

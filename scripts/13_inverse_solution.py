@@ -25,28 +25,27 @@ def run_inverse(subject):
                                    'vis_left_minus_right', 'aud_left_eq',
                                    'aud_right_eq', 'vis_left_eq',
                                    'vis_right_eq'
-                               ],
-                               verbose='error')
-    cov = mne.read_cov(cov_fname, verbose='error')
-    fwd = mne.read_forward_solution(fwd_fname, verbose='error')
+                               ])
+    cov = mne.read_cov(cov_fname)
+    fwd = mne.read_forward_solution(fwd_fname)
     info = evokeds[0].info
+    # set rank to 'info' because the data were Maxwell-filtered
     inverse_operator = mne.minimum_norm.make_inverse_operator(info,
                                                               fwd,
                                                               cov,
-                                                              verbose='error')
+                                                              rank='info')
     mne.minimum_norm.write_inverse_operator(inv_fname, inverse_operator)
 
     for evoked in evokeds:
         stc_fname = op.join(
-            meg_dir, subject,
-            f'{subject}_audvis-dSPM-{spacing}-inverse-filt-sss-{evoked.comment}'
-        )
+            meg_dir, subject, '-'.join([
+                f'{subject}_audvis', 'dSPM', spacing, 'inverse', 'filt', 'sss',
+                evoked.comment
+            ]))
         stc = mne.minimum_norm.apply_inverse(evoked,
                                              inverse_operator,
-                                             lambda2,
-                                             'dSPM',
-                                             pick_ori='vector',
-                                             verbose='error')
+                                             method='dSPM',
+                                             pick_ori='vector')
         stc.save(stc_fname)
     print(f'Saved source estimates for {subject}')
 

@@ -6,8 +6,13 @@ from mne.parallel import parallel_func
 from config import excludes, map_subjects, meg_dir, n_jobs
 
 
-def run_evoked(subject):
-    epo_fname = op.join(meg_dir, subject, f'{subject}_audvis-filt-sss-epo.fif')
+def run_evoked(subject, autoreject=True):
+    if autoreject:
+        epo_fname = op.join(meg_dir, subject,
+                            f'{subject}_audvis-filt-sss-ar-epo.fif')
+    else:
+        epo_fname = op.join(meg_dir, subject,
+                            f'{subject}_audvis-filt-sss-ar-epo.fif')
     evoked_fname = op.join(meg_dir, subject,
                            f'{subject}_audvis-filt-sss-ave.fif')
     epochs = mne.read_epochs(epo_fname, preload=True)
