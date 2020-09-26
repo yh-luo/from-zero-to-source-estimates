@@ -11,3 +11,4 @@ sss_cal_mgh.dat
 
 # cache
 __pycache__/
+viz/.ipynb_checkpoints/

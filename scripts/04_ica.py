@@ -23,14 +23,13 @@ def run_ica(subject):
     picks = mne.pick_types(raw.info,
                            meg=True,
                            eeg=False,
-                           eog=True,
-                           ecg=True,
-                           stim=False)
-    # use autoreject to find the rejection threshold to get better ICA results
+                           eog=True)
+    # use autoreject (global) to find the rejection threshold
     tstep = 1
     events = mne.make_fixed_length_events(raw, duration=tstep)
     # do not use baseline correction because autoreject (global) would be used
     even_epochs = mne.Epochs(raw, events, baseline=None, tmin=0, tmax=tstep)
+    print(f'Run autoreject (global) on Raw for {subject}')
     reject = get_rejection_threshold(even_epochs,
                                      ch_types=['mag', 'grad'],
                                      verbose=False)

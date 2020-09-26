@@ -35,7 +35,8 @@ def run_epochs(subject, autoreject=True):
                                                          preload=True)
         ecg_inds, scores_ecg = ica.find_bads_ecg(ecg_epochs,
                                                  method='ctps',
-                                                 threshold=0.21)
+                                                 threshold='auto',
+                                                 verbose='INFO')
     except ValueError:
         # not found
         pass
@@ -83,6 +84,7 @@ def run_epochs(subject, autoreject=True):
         tmin=tmin,
         tmax=tmax,
         baseline=baseline,
+        decim=4,  # raw sampling rate is 600 Hz, subsample to 150 Hz
         preload=True,  # for autoreject
         reject_tmax=reject_tmax,
         reject_by_annotation=True)

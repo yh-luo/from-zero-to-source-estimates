@@ -25,7 +25,7 @@ def run_filter(subject):
     raw = mne.io.read_raw_fif(raw_fname, preload=True)
     # Low-pass MEG data
     raw.filter(l_freq, h_freq, n_jobs=n_jobs)
-    # 1 Hz high-pass ECG for ICA
+    # 1 Hz high-pass EOG for ICA
     picks_eog = mne.pick_types(raw.info, meg=False, eog=True)
     raw.filter(1, None, picks=picks_eog, fir_window='hann', n_jobs=n_jobs)
     raw.save(out_fname, overwrite=True)

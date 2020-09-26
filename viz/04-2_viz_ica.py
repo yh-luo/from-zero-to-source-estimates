@@ -29,8 +29,8 @@ ica = mne.preprocessing.read_ica(ica_fname)
 
 
 # plot estimated source and highlight the ECG-related components
-# the indexes were printed by 5_epochs.py
-ica.exclude += [1, 18]
+# the indexes were printed by 05_epochs.py
+ica.exclude += [3, 22]
 ica.plot_sources(raw)
 
 
@@ -38,9 +38,9 @@ ica.plot_sources(raw)
 
 
 # plot estimated source and highlight the EOG-related components
-# the indexes were printed by 5_epochs.py
+# the indexes were printed by 05_epochs.py
 ica.exclude = []
-ica.exclude += [0, 21]
+ica.exclude += [2, 23]
 ica.plot_sources(raw)
 
 
@@ -48,12 +48,12 @@ ica.plot_sources(raw)
 
 
 # ECG components
-ica.plot_components([1, 18])
+ica.plot_components([3, 22])
 
 
 # In[6]:
 
 
 # EOG components
-ica.plot_components([0, 21])
+ica.plot_components([2, 23])
 

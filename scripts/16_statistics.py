@@ -81,7 +81,8 @@ def run_spatio_temporal_cluster_1samp_test(subjects,
                     clusters=clusters,
                     cluster_pv=cluster_pv,
                     H0=H0),
-               title='mnepython')
+               title='mnepython',
+               overwrite=True)
     elaped = time.time() - t0
     print(f'Save {cluster_name} after {timedelta(seconds=round(elaped))}')
 
